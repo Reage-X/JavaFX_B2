@@ -15,6 +15,9 @@ public class Compte
         this.MDP = MDP;
     }
 
+    public Compte() {
+    }
+
     public String getUser_name()                            { return user_name; }
     public String getMDP()                                  { return MDP; }
     public ArrayList<Integer> getScore()                    { return score; }
