@@ -10,10 +10,22 @@ public class Map {
     public static final char ORB = '.';
     public static final char EMPTY = ' ';
 
+    public int getLongueur() {
+        return longueur;
+    }
+
+    public int getHauteur() {
+        return hauteur;
+    }
+
+    public char[][] getMap() {
+        return map;
+    }
+
     public Map(int longueur, int hauteur) {
         this.longueur = longueur;
         this.hauteur = hauteur;
-        map = new char[hauteur][longueur];
+        map = new char[longueur][hauteur];
         fillWithOrbs();
     }
 
@@ -21,7 +33,7 @@ public class Map {
     private void fillWithOrbs() {
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < longueur; x++) {
-                map[y][x] = ORB;  // Par défaut : ORBE
+                map[y][x] = ORB;
             }
         }
     }
@@ -59,3 +71,4 @@ public class Map {
         }
     }
 }
+
