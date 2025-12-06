@@ -31,19 +31,19 @@ public class Sql {
         return cmp;
     }
 
-    public static void addCompte(Compte compte, Connection conn) throws SQLException {
+    public static boolean addCompte(Compte compte, Connection conn) throws SQLException {
         String sqlCmp = "INSERT INTO comptes (pseudo, MDP, score) VALUES (?, ?, ?)";
-        try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp, Statement.RETURN_GENERATED_KEYS)){
+        try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp, Statement.RETURN_GENERATED_KEYS)) {
             psCmp.setString(1, compte.getUser_name());
             psCmp.setString(2, compte.getMDP());
             Object[] scoresArray = compte.getScore() != null ? compte.getScore().toArray() : new Object[0];
             Array sqlScores = conn.createArrayOf("INTEGER", scoresArray);
             psCmp.setArray(3, sqlScores);
-            psCmp.executeUpdate();
+            return psCmp.executeUpdate() > 0;
         }
     }
 
-    public static void updateScore(Compte compte, Connection conn) throws SQLException {
+    public static boolean updateScore(Compte compte, Connection conn) throws SQLException {
         String sqlCmp = "UPDATE comptes SET score = ? WHERE pseudo = ? AND MDP = ?";
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
             Object[] scoresArray = compte.getScore() != null ? compte.getScore().toArray() : new Object[0];
@@ -51,7 +51,7 @@ public class Sql {
             psCmp.setArray(1, sqlScores);
             psCmp.setString(2, compte.getUser_name());
             psCmp.setString(3, compte.getMDP());
-            psCmp.executeUpdate();
+            return psCmp.executeUpdate() > 0;
         }
     }
 
@@ -65,7 +65,7 @@ public class Sql {
         }
     }
 
-    public static void updateUserName(Compte compte, String oldUserName, Connection conn) throws SQLException {
+    public static boolean updateUserName(Compte compte, String oldUserName, Connection conn) throws SQLException {
         if (!oldUserName.equals(compte.getUser_name()) && PseudoExiste(compte.getUser_name(), conn)) {
             throw new SQLException("Username already exists.");
         }
@@ -75,25 +75,26 @@ public class Sql {
             statement.setString(1, compte.getUser_name());
             statement.setString(2, oldUserName);
             statement.setString(3, compte.getMDP());
-            statement.executeUpdate();
+            return statement.executeUpdate() > 0;
         }
     }
 
-    public static void updateMDP(Compte compte, String oldMDP, Connection conn) throws SQLException {
+    public static boolean updateMDP(Compte compte, String oldMDP, Connection conn) throws SQLException {
         String sqlCmp = "UPDATE comptes SET MDP = ? WHERE pseudo = ? AND MDP = ?";
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
             psCmp.setString(1, compte.getMDP());
             psCmp.setString(2, compte.getUser_name());
             psCmp.setString(3, oldMDP);
-            psCmp.executeUpdate();
+            return psCmp.executeUpdate() > 0;
         }
     }
 
-    public static void deleteCompte(Compte compte, Connection conn) throws SQLException {
+    public static boolean deleteCompte(Compte compte, Connection conn) throws SQLException {
         String sqlCmp = "DELETE FROM comptes WHERE pseudo = ? AND MDP = ?";
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
             psCmp.setString(1, compte.getUser_name());
             psCmp.setString(2, compte.getMDP());
+            return psCmp.executeUpdate() > 0;
         }
     }
 
