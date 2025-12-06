@@ -98,6 +98,7 @@ public class Sql {
         }
     }
 
-    //chargement des maps a faire
+
+    //TODO chargement des maps a faire
 
 }
