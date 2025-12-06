@@ -96,4 +96,7 @@ public class Sql {
             psCmp.setString(2, compte.getMDP());
         }
     }
+
+    //chargement des maps a faire
+
 }
