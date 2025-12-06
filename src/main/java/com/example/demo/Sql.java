@@ -55,13 +55,27 @@ public class Sql {
         }
     }
 
-    public static void updateUserName(Compte compte, String oldUserName, Connection conn) throws SQLException {
-        String sqlCmp = "UPDATE comptes SET pseudo = ? WHERE pseudo = ? AND MDP = ?";
+    public static boolean PseudoExiste(String pseudo, Connection conn) throws SQLException {
+        String sqlCmp = "SELECT pseudo FROM comptes WHERE pseudo = ?";
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
-            psCmp.setString(1, compte.getUser_name());
-            psCmp.setString(2, oldUserName);
-            psCmp.setString(3, compte.getMDP());
-            psCmp.executeUpdate();
+            psCmp.setString(1, pseudo);
+            try (ResultSet rsCmp = psCmp.executeQuery()) {
+                return rsCmp.next();
+            }
+        }
+    }
+
+    public static void updateUserName(Compte compte, String oldUserName, Connection conn) throws SQLException {
+        if (!oldUserName.equals(compte.getUser_name()) && PseudoExiste(compte.getUser_name(), conn)) {
+            throw new SQLException("Username already exists.");
+        }
+
+        String query = "UPDATE comptes SET pseudo = ? WHERE pseudo = ? AND MDP = ?";
+        try (PreparedStatement statement = conn.prepareStatement(query)) {
+            statement.setString(1, compte.getUser_name());
+            statement.setString(2, oldUserName);
+            statement.setString(3, compte.getMDP());
+            statement.executeUpdate();
         }
     }
 
@@ -72,6 +86,14 @@ public class Sql {
             psCmp.setString(2, compte.getUser_name());
             psCmp.setString(3, oldMDP);
             psCmp.executeUpdate();
+        }
+    }
+
+    public static void deleteCompte(Compte compte, Connection conn) throws SQLException {
+        String sqlCmp = "DELETE FROM comptes WHERE pseudo = ? AND MDP = ?";
+        try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
+            psCmp.setString(1, compte.getUser_name());
+            psCmp.setString(2, compte.getMDP());
         }
     }
 }
