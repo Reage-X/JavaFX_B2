@@ -1,6 +1,6 @@
 package com.example.demo;
 
-public class Joueur extends com.example.demo.Compte
+public class Joueur
 {
     private int x;
     private int y;
