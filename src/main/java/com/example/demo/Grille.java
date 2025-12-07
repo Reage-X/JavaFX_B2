@@ -153,52 +153,17 @@ public class Grille {
     }
 
 
-    /** Retourne le niveau 4 */
-    public static Map niveau4() {
-        Map map = baseMap();
-
-        // Labyrinthe symétrique
-        for (int x = 3; x <= 16; x++) map.addWall(x, 4);
-        for (int x = 3; x <= 16; x++) map.addWall(x, 8);
-
-        map.addWall(8, 6);
-        map.addWall(9, 6);
-        map.addWall(10, 6);
-        map.addWall(11, 6);
-
-        map.addWall(5, 2);
-        map.addWall(14, 2);
-
-        map.addWall(5, 10);
-        map.addWall(14, 10);
-
-        return map;
-    }
 
 
     private static Map baseMap() {
 
         // On garde les dimensions 20 x 13
-        Map map = new Map(20, 13);
+        Map map = new Map(20, 15);
 
         int longueur = map.getLongueur();
         int hauteur = map.getHauteur();
 
-        // Murs du haut et du bas
-        for (int x = 0; x < longueur; x++) {
-            map.addWall(x, 0);
-            map.addWall(x, hauteur - 1);
-        }
 
-
-        int milieu = hauteur / 2;
-
-        for (int y = 0; y < hauteur; y++) {
-            if (y != milieu) {
-                map.addWall(0, y);              // gauche
-                map.addWall(longueur - 1, y);   // droite
-            }
-        }
 
         return map;
     }
