@@ -32,6 +32,7 @@ public class Grille {
         map.addWall(7, 4);
         map.addWall(15, 4);
 
+
         return map;
     }
 
