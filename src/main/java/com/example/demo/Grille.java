@@ -35,25 +35,74 @@ public class Grille {
     }
 
     /** Retourne le niveau 2 */
-    public static Map niveau2() {
+    public static Map niveauImage() {
         Map map = baseMap();
 
-        // Structure interne
-        for (int y = 3; y <= 9; y++) map.addWall(9, y);
-        for (int y = 3; y <= 9; y++) map.addWall(10, y);
+        // Bordures haut & bas
+        for (int x = 1; x <= 20; x++) map.addWall(x, 1);
+        for (int x = 1; x <= 20; x++) map.addWall(x, 15);
+        for (int y = 1; y <= 15; y++) map.addWall(1, y);
+        for (int y = 1; y <= 15; y++) map.addWall(20, y);
 
-        map.addWall(4, 4);
-        map.addWall(5, 4);
-        map.addWall(14, 4);
+
+        // Colonne 3 : y 4 à 13
+        for (int y = 4; y <= 13; y++) map.addWall(3, y);
+
+        // Colonne 4 : y 4 à 8
+        for (int y = 4; y <= 8; y++) map.addWall(4, y);
+
+        // Colonne 6 : y 4 à 8
+        for (int y = 4; y <= 8; y++) map.addWall(6, y);
+
+        // Colonne 8 : y 7 à 8
+        for (int y = 7; y <= 8; y++) map.addWall(8, y);
+
+        // Colonne 10 : y 4 à 14
+        for (int y = 4; y <= 14; y++) map.addWall(10, y);
+
+        // Colonne 11 : y 9 à 12
+        for (int y = 9; y <= 12; y++) map.addWall(11, y);
+
+        // Colonne 12 : y 4 à 14
+        for (int y = 4; y <= 14; y++) map.addWall(12, y);
+
+        // Colonne 14 : y 4 à 14
+        for (int y = 4; y <= 14; y++) map.addWall(14, y);
+
+        // Colonne 16 : y 14 à 14
+        map.addWall(16, 14);
+
+        // Colonne 17 : y 7 à 14
+        for (int y = 7; y <= 14; y++) map.addWall(17, y);
+
+        // Colonne 18 : y 4 à 14
+        for (int y = 4; y <= 14; y++) map.addWall(18, y);
+
+
+
+        // Ligne 4 : x 4 à 7
+        for (int x = 4; x <= 7; x++) map.addWall(x, 4);
+
+        // Ligne 7 : x 4 à 12
+        for (int x = 4; x <= 12; x++) map.addWall(x, 7);
+
+        // Ligne 9 : x 10 à 12
+        for (int x = 10; x <= 12; x++) map.addWall(x, 9);
+
+        // Ligne 13 : x 10 à 12
+        for (int x = 10; x <= 12; x++) map.addWall(x, 13);
+
+        // Ligne 14 : x 2 à 18 (avec trous)
+        for (int x = 2; x <= 18; x += 2) map.addWall(x, 14); // murs sur 2,4,6,...
+
+
+
+        map.addWall(7, 4);
         map.addWall(15, 4);
-
-        map.addWall(4, 8);
-        map.addWall(5, 8);
-        map.addWall(14, 8);
-        map.addWall(15, 8);
 
         return map;
     }
+
 
     /** Retourne le niveau 3 */
     public static Map niveau3() {
