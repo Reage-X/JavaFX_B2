@@ -7,7 +7,7 @@ public class Compte
     private String user_name;
     private String MDP;
     private ArrayList<Integer> score;
-    private Joueur joueur;
+    private Entity joueur;
 
     public Compte(String user_name, String MDP)
     {
@@ -26,7 +26,7 @@ public class Compte
         }
         return null;
     }
-    public Joueur getJoueur()                               { return joueur; }
+    public Entity getJoueur()                               { return joueur; }
 
 
     public void setUser_name(String user_name)              { this.user_name = user_name; }
@@ -41,5 +41,5 @@ public class Compte
             this.score.sort(Comparator.reverseOrder());
         }
     }
-    public void setJoueur(Joueur joueur)                    { this.joueur = joueur; }
+    public void setJoueur(Entity joueur)                    { this.joueur = joueur; }
 }

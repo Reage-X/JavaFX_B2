@@ -1,6 +1,6 @@
 package com.example.demo;
 
-public class Joueur
+public class Entity
 {
     private int x;
     private int y;
@@ -11,7 +11,7 @@ public class Joueur
     private int sprite_frame;
 
 
-    public Joueur(int x, int y, int dx, int dy, int score_jeu, int nb_vies, int sprite_frame)
+    public Entity(int x, int y, int dx, int dy, int score_jeu, int nb_vies, int sprite_frame)
     {
         this.x = x;
         this.y = y;
@@ -21,7 +21,7 @@ public class Joueur
         this.nb_vies = nb_vies;
         this.sprite_frame = sprite_frame;
     }
-    public Joueur()
+    public Entity()
     {
         this.x = 0;
         this.y = 0;
