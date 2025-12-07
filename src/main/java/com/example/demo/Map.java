@@ -10,6 +10,12 @@ public class Map {
     public static final char ORB = '.';
     public static final char EMPTY = ' ';
 
+    public Map(int longueur, int hauteur) {
+        this.longueur = longueur;
+        this.hauteur = hauteur;
+        map = new char[hauteur][longueur];
+        fillWithOrbs();
+    }
     public int getLongueur() {
         return longueur;
     }
@@ -22,18 +28,12 @@ public class Map {
         return map;
     }
 
-    public Map(int longueur, int hauteur) {
-        this.longueur = longueur;
-        this.hauteur = hauteur;
-        map = new char[longueur][hauteur];
-        fillWithOrbs();
-    }
 
     /** Remplit la carte d'orbes par défaut */
     private void fillWithOrbs() {
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < longueur; x++) {
-                map[y][x] = ORB;
+                map[y][x] = ORB;  // Par défaut : ORBE
             }
         }
     }
@@ -56,7 +56,7 @@ public class Map {
     }
 
     /** Affichage console avec le joueur */
-    public void print(Joueur joueur) {
+    public void print(Entity joueur) {
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < longueur; x++) {
 
@@ -71,4 +71,3 @@ public class Map {
         }
     }
 }
-

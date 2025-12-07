@@ -2,21 +2,34 @@ package com.example.demo;
 
 public class Grille {
 
+
     /** Retourne le niveau 1 */
     public static Map niveau1() {
         Map map = baseMap();
 
-        // Quelques murs internes
-        for (int x = 4; x <= 15; x++) map.addWall(x, 3);
-        for (int x = 4; x <= 15; x++) map.addWall(x, 9);
+        for (int x = 1; x <= 20; x++) map.addWall(x, 1);
+        for (int x = 1; x <= 20; x++) map.addWall(x, 15);
+        for (int y = 1; y <= 15; y++) map.addWall(1, y);
+        for (int y = 1; y <= 15; y++) map.addWall(20, y);
 
-        map.addWall(5, 5);
-        map.addWall(6, 5);
-        map.addWall(7, 5);
+        for (int y = 3; y <= 15; y++) map.addWall(3, y);
+        for (int y = 3; y <= 7; y++) map.addWall(5, y);
+        for (int x = 4; x <= 7; x++) map.addWall(x, 7);
+        for (int y = 8; y <= 11; y++) map.addWall(7, y);
+        for (int y = 7; y <= 15; y++) map.addWall(9, y);
+        for (int x = 9; x <= 12; x++) map.addWall(x, 4);
+        for (int x = 10; x <= 16; x++) map.addWall(x, 7);
+        for (int y = 10; y <= 15; y++) map.addWall(11, y);
+        for (int y = 8; y <= 12; y++) map.addWall(13, y);
+        for (int y = 10; y <= 15; y++) map.addWall(16, y);
+        for (int y = 4; y <= 12; y++) map.addWall(18, y);
 
-        map.addWall(12, 7);
-        map.addWall(13, 7);
+
         map.addWall(14, 7);
+        map.addWall(4, 11);
+        map.addWall(5, 11);
+        map.addWall(7, 4);
+        map.addWall(15, 4);
 
         return map;
     }
@@ -89,14 +102,14 @@ public class Grille {
         return map;
     }
 
-   
+
     private static Map baseMap() {
 
         // On garde les dimensions 20 x 13
         Map map = new Map(20, 13);
 
-        int longueur = map.getLongueur(); 
-        int hauteur = map.getHauteur();   
+        int longueur = map.getLongueur();
+        int hauteur = map.getHauteur();
 
         // Murs du haut et du bas
         for (int x = 0; x < longueur; x++) {
@@ -104,7 +117,7 @@ public class Grille {
             map.addWall(x, hauteur - 1);
         }
 
-        
+
         int milieu = hauteur / 2;
 
         for (int y = 0; y < hauteur; y++) {
