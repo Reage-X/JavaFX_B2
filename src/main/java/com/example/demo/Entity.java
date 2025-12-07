@@ -1,25 +1,44 @@
 package com.example.demo;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Entity
 {
-    private int x;
-    private int y;
-    private int dx;
-    private int dy;
-    private int score_jeu;
-    private int nb_vies;
-    private int sprite_frame;
+    protected int x;
+    protected int y;
+    protected int startX;
+    protected int startY;
+    protected int dx;
+    protected int dy;
+    protected int sprite_frame;
+    protected int largeur;
+    protected int hauteur;
 
 
-    public Entity(int x, int y, int dx, int dy, int score_jeu, int nb_vies, int sprite_frame)
+    //
+    //
+    //      DANS LE MAIN DU JEU
+    Random rand = new Random();
+    ArrayList<Entity> murs;
+    ArrayList<Entity> point;
+    ArrayList<Entity> ennemies;
+    public static int tailleCase = 64;
+    //      DANS LE MAIN DU JEU
+    //
+    //
+
+
+    public Entity(int startX, int startY, int largeur, int hauteur)
     {
-        this.x = x;
-        this.y = y;
-        this.dx = dx;
-        this.dy = dy;
-        this.score_jeu = score_jeu;
-        this.nb_vies = nb_vies;
-        this.sprite_frame = sprite_frame;
+        this.x = 0;
+        this.y = 0;
+        this.dx = 0;
+        this.dy = 0;
+        this.startX = startX;
+        this.startY = startY;
+        this.sprite_frame = 0;
+        this.largeur = largeur;
+        this.hauteur = hauteur;
     }
     public Entity()
     {
@@ -27,25 +46,47 @@ public class Entity
         this.y = 0;
         this.dx = 0;
         this.dy = 0;
-        this.score_jeu = 0;
-        this.nb_vies = 0;
+        this.startX = 0;
+        this.startY = 0;
         this.sprite_frame = 0;
+        this.largeur = 0;
+        this.hauteur = 0;
     }
+
 
     public int getX()                                   { return x; }
     public int getY()                                   { return y; }
     public int getDx()                                  { return dx; }
     public int getDy()                                  { return dy; }
-    public int getScore_jeu()                           { return score_jeu; }
-    public int getNb_vies()                             { return nb_vies; }
+    public int getStartX()                              { return startX; }
+    public int getStartY()                              { return startY; }
     public int getSprite_frame()                        { return sprite_frame; }
-
+    public int getLargeur()                             { return largeur; }
+    public int getHauteur()                             { return hauteur; }
 
     public void setX(int x)                             { this.x = x; }
     public void setY(int y)                             { this.y = y; }
     public void setDx(int dx)                           { this.dx = dx; }
     public void setDy(int dy)                           { this.dy = dy; }
-    public void setScore(int score_jeu)                 { this.score_jeu = score_jeu; }
-    public void setNb_vies(int nb_vies)                 { this.nb_vies = nb_vies; }
+    public void setStartX(int startX)                   { this.startX = startX; }
+    public void setStartY(int startY)                   { this.startY = startY; }
     public void setSprite_frame(int sprite_frame)       { this.sprite_frame = sprite_frame; }
+    public void setLargeur(int largeur)                 { this.largeur = largeur; }
+    public void setHauteur(int hauteur)                 { this.hauteur = hauteur; }
+
+    public boolean collision(Entity a, Entity b) {
+        return  a.x < b.x + b.largeur &&
+                a.x + a.largeur > b.x &&
+                a.y < b.y + b.hauteur &&
+                a.y + a.hauteur > b.y;
+    }
+
+    void reset()
+    {
+        this.x = this.startX;
+        this.y = this.startY;
+        this.dx = 0;
+        this.dy = 0;
+        this.sprite_frame = 0;
+    }
 }
