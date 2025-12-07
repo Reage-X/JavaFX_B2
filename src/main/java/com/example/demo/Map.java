@@ -30,7 +30,7 @@ public class Map {
 
 
     /** Remplit la carte d'orbes par défaut */
-    private void fillWithOrbs() {
+    public void fillWithOrbs() {
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < longueur; x++) {
                 map[x][y] = ORB;  // Par défaut : ORBE
