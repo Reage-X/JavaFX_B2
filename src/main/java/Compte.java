@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 
+
 public class Compte
 {
     private String user_name;
@@ -8,13 +9,16 @@ public class Compte
     private ArrayList<Integer> score;
     private Joueur joueur;
 
+
+
     public Compte(String user_name, String MDP)
     {
         this.user_name = user_name;
         this.MDP = MDP;
     }
 
-    public Compte() {}
+
+
 
     public String getUser_name()                            { return user_name; }
     public String getMDP()                                  { return MDP; }
@@ -41,4 +45,11 @@ public class Compte
         }
     }
     public void setJoueur(Joueur joueur)                    { this.joueur = joueur; }
+
+
+
+
+    public void addScore() {
+        this.addScore(this.joueur.getScore_jeu());
+    }
 }
