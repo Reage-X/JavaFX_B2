@@ -6,6 +6,7 @@ public class Grille {
     /** Retourne le niveau 1 */
     public static Map niveau1() {
         Map map = baseMap();
+        map.fillWithOrbs();
 
         for (int x = 1; x <= 20; x++) map.addWall(x, 1);
         for (int x = 1; x <= 20; x++) map.addWall(x, 15);
@@ -35,8 +36,9 @@ public class Grille {
     }
 
     /** Retourne le niveau 2 */
-    public static Map niveauImage() {
+    public static Map niveau2() {
         Map map = baseMap();
+        map.fillWithOrbs();
 
         // Bordures haut & bas
         for (int x = 1; x <= 20; x++) map.addWall(x, 1);
@@ -105,8 +107,9 @@ public class Grille {
 
 
     /** Retourne le niveau 3 */
-    public static Map niveau5() {
+    public static Map niveau3() {
         Map map = baseMap();
+        map.fillWithOrbs();
 
 
         for (int x = 1; x <= 20; x++) map.addWall(x, 1);
@@ -168,4 +171,5 @@ public class Grille {
         return map;
     }
 }
+
 
