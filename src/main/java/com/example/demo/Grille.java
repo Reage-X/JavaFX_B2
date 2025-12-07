@@ -105,29 +105,53 @@ public class Grille {
 
 
     /** Retourne le niveau 3 */
-    public static Map niveau3() {
+    public static Map niveau5() {
         Map map = baseMap();
 
-        // Couloir horizontal central
-        for (int x = 2; x <= 17; x++) map.addWall(x, 6);
 
-        // Quelques ouvertures dans ce mur
-        map.getMap()[6][8] = Map.ORB;
-        map.getMap()[6][11] = Map.ORB;
+        for (int x = 1; x <= 20; x++) map.addWall(x, 1);
+        for (int x = 1; x <= 20; x++) map.addWall(x, 15);
+        for (int y = 1; y <= 15; y++) map.addWall(1, y);
+        for (int y = 1; y <= 15; y++) map.addWall(20, y);
 
-        // Blocs de chaque côté
+
+
+        // Bloc gauche (x 4 à 6, y 3 à 5)
+        for (int x = 4; x <= 6; x++) map.addWall(x, 3);
+        for (int x = 4; x <= 6; x++) map.addWall(x, 5);
         map.addWall(4, 4);
-        map.addWall(4, 5);
-        map.addWall(4, 7);
-        map.addWall(4, 8);
+        map.addWall(6, 4);
 
-        map.addWall(15, 4);
-        map.addWall(15, 5);
-        map.addWall(15, 7);
-        map.addWall(15, 8);
+        // Bloc droit (x 14 à 16, y 3 à 5)
+        for (int x = 14; x <= 16; x++) map.addWall(x, 3);
+        for (int x = 14; x <= 16; x++) map.addWall(x, 5);
+        map.addWall(14, 4);
+        map.addWall(16, 4);
+
+
+
+
+        for (int y = 3; y <= 11; y++) map.addWall(10, y);
+
+
+        for (int x = 9; x <= 11; x++) map.addWall(x, 6);
+
+
+        for (int x = 9; x <= 11; x++) map.addWall(x, 9);
+
+
+
+        for (int x = 4; x <= 7; x++) map.addWall(x, 13);
+        for (int x = 10; x <= 13; x++) map.addWall(x, 13);
+
+
+
+        for (int x = 3; x <= 18; x++) map.addWall(x, 7);
+
 
         return map;
     }
+
 
     /** Retourne le niveau 4 */
     public static Map niveau4() {
