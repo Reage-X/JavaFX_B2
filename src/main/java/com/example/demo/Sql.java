@@ -97,8 +97,4 @@ public class Sql {
             return psCmp.executeUpdate() > 0;
         }
     }
-
-
-    //TODO chargement des maps a faire
-
 }
