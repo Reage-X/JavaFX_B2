@@ -1,32 +1,23 @@
 package com.example.demo;
+import javafx.scene.image.Image;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Entity
 {
+    Random rand = new Random();
+    public static int tailleCase = 64;
+
     protected int x;
     protected int y;
     protected int startX;
     protected int startY;
     protected int dx;
     protected int dy;
-    protected int sprite_frame;
+    private int direction;
+    protected Image sprite_frame;
     protected int largeur;
     protected int hauteur;
-
-
-    //
-    //
-    //      DANS LE MAIN DU JEU
-    Random rand = new Random();
-    ArrayList<Entity> murs;
-    ArrayList<Entity> point;
-    ArrayList<Entity> ennemies;
-    public static int tailleCase = 64;
-    //      DANS LE MAIN DU JEU
-    //
-    //
-
 
     public Entity(int startX, int startY, int largeur, int hauteur)
     {
@@ -34,9 +25,10 @@ public class Entity
         this.y = 0;
         this.dx = 0;
         this.dy = 0;
+        this.direction = rand.nextInt(4);
         this.startX = startX;
         this.startY = startY;
-        this.sprite_frame = 0;
+        this.sprite_frame = null;
         this.largeur = largeur;
         this.hauteur = hauteur;
     }
@@ -46,9 +38,10 @@ public class Entity
         this.y = 0;
         this.dx = 0;
         this.dy = 0;
+        this.direction = rand.nextInt(4);
         this.startX = 0;
         this.startY = 0;
-        this.sprite_frame = 0;
+        this.sprite_frame = null;
         this.largeur = 0;
         this.hauteur = 0;
     }
@@ -58,9 +51,10 @@ public class Entity
     public int getY()                                   { return y; }
     public int getDx()                                  { return dx; }
     public int getDy()                                  { return dy; }
+    public int getDirection()                           { return direction; }
     public int getStartX()                              { return startX; }
     public int getStartY()                              { return startY; }
-    public int getSprite_frame()                        { return sprite_frame; }
+    public Image getSprite_frame()                      { return sprite_frame; }
     public int getLargeur()                             { return largeur; }
     public int getHauteur()                             { return hauteur; }
 
@@ -68,11 +62,35 @@ public class Entity
     public void setY(int y)                             { this.y = y; }
     public void setDx(int dx)                           { this.dx = dx; }
     public void setDy(int dy)                           { this.dy = dy; }
+    public void setDirection(int direction)             { this.direction = direction; }
     public void setStartX(int startX)                   { this.startX = startX; }
     public void setStartY(int startY)                   { this.startY = startY; }
-    public void setSprite_frame(int sprite_frame)       { this.sprite_frame = sprite_frame; }
+    public void setSprite_frame(Image sprite_frame)     { this.sprite_frame = sprite_frame; }
     public void setLargeur(int largeur)                 { this.largeur = largeur; }
     public void setHauteur(int hauteur)                 { this.hauteur = hauteur; }
+
+
+
+    void updateDx_Dy() {
+        switch (this.direction) {
+            case 0: // Haut
+                this.dx = 0;
+                this.dy = -tailleCase / 4;
+                break;
+            case 2: // Bas
+                this.dx = 0;
+                this.dy = tailleCase / 4;
+                break;
+            case 3: // Gauche
+                this.dx = -tailleCase / 4;
+                this.dy = 0;
+                break;
+            case 1: // Droit
+                this.dx = tailleCase / 4;
+                this.dy = 0;
+                break;
+        }
+    }
 
     public boolean collision(Entity a, Entity b) {
         return  a.x < b.x + b.largeur &&
@@ -87,6 +105,6 @@ public class Entity
         this.y = this.startY;
         this.dx = 0;
         this.dy = 0;
-        this.sprite_frame = 0;
+        this.sprite_frame = null;
     }
 }

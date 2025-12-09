@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.util.ArrayList;
+
 public class Map {
     private int longueur;
     private int hauteur;
@@ -14,33 +16,57 @@ public class Map {
     public static final char GHOST_Pink = 'P';
     public static final char GHOST_Yellow = 'Y';
 
+    public static int tailleCase = 64;
+    public ArrayList<Entity> murs = new ArrayList<>() ;
+    public ArrayList<Entity> points = new ArrayList<>() ;
+    public ArrayList<Ennemi> ennemies = new ArrayList<>() ;
+
+
+
     public Map(int longueur, int hauteur) {
         this.longueur = longueur;
         this.hauteur = hauteur;
         map = new char[hauteur][longueur];
     }
 
-    public Map() {}
+    public Map() {
+    }
 
-    public int getLongueur() { return longueur; }
-    public int getHauteur() { return hauteur; }
-    public char[][] getMap() { return map; }
+    public int getLongueur() {
+        return longueur;
+    }
+
+    public int getHauteur() {
+        return hauteur;
+    }
+
+    public char[][] getMap() {
+        return map;
+    }
 
 
-    /** Remplit la carte d'orbes uniquement dans les cases EMPTY ou non initialisées */
+    /**
+     * Remplit la carte d'orbes uniquement dans les cases EMPTY ou non initialisées
+     */
     public void fillWithOrbs() {
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < longueur; x++) {
                 if (map[y][x] == EMPTY || map[y][x] == '\0') {
                     map[y][x] = ORB;
+                    Entity point = new Entity(x,y,32,32);
+                    points.add(point);
                 }
             }
         }
     }
 
-    /** Ajoute un mur */
+    /**
+     * Ajoute un mur
+     */
     public void addWall(int x, int y) {
         map[y][x] = WALL;   // ✔ correction x/y
+        Entity mur = new Entity(x,y,32,32);
+        murs.add(mur);
     }
 
     public void addPlayer(int x, int y) {
@@ -50,23 +76,30 @@ public class Map {
     public void addGhost_Red(int x, int y) {
         map[y][x] = GHOST_Red;   // ✔ correction x/y
     }
+
     public void addGhost_Blue(int x, int y) {
         map[y][x] = GHOST_Blue;
     }
+
     public void addGhost_Pink(int x, int y) {
         map[y][x] = GHOST_Pink;
     }
+
     public void addGhost_Yellow(int x, int y) {
         map[y][x] = GHOST_Yellow;
     }
 
 
-    /** Lecture d'une case */
+    /**
+     * Lecture d'une case
+     */
     public char getCell(int x, int y) {
         return map[y][x];   // ✔ correction x/y
     }
 
-    /** Suppression d'une orbe */
+    /**
+     * Suppression d'une orbe
+     */
     public void suppOrbAt(int x, int y) {
         if (map[y][x] == ORB) {
             map[y][x] = EMPTY;  // ✔ correction x/y
@@ -83,9 +116,6 @@ public class Map {
     }
 
 
-
-
-
     public Map niveau1() {
 
         // Carte 19x21 → index max = [18][20]
@@ -93,6 +123,12 @@ public class Map {
 
         // Remplir toute la map d'orbes par défaut
         m.fillWithOrbs();
+
+        m.addGhost_Yellow(8, 9);
+        m.addGhost_Blue(9, 9);
+        m.addGhost_Pink(10, 9);
+        m.addGhost_Red(9, 8);
+        m.addPlayer(8, 1);
 
         // ---------------------------------------------------------
         // 1. BORDURES EXTÉRIEURES
@@ -211,115 +247,127 @@ public class Map {
 
         return m;
     }
+
     public Map niveau2() {
 
         Map map = new Map(19, 21);
         map.fillWithOrbs();
 
-        // --- LIGNE 1 et LIGNE 21 : ###################
-        for (int x = 1; x <= 19; x++) {
-            map.addWall(x, 1);
-            map.addWall(x, 21);
+        // --- LIGNE 0 et LIGNE 20 : ###################
+        for (int x = 0; x <= 18; x++) {
+            map.addWall(x, 0);
+            map.addWall(x, 20);
         }
 
-        // --- LIGNE 2 et LIGNE 20 : #.................#
-        for (int y : new int[]{2, 20}) {
-            map.addWall(1, y);
-            map.addWall(19, y);
+        // --- LIGNE 1 et LIGNE 19 : #.................#
+        for (int y : new int[]{1, 19}) {
+            map.addWall(0, y);
+            map.addWall(18, y);
         }
 
-        // --- LIGNE 3 et LIGNE 19 : #.######.#.######.#
-        int[] blocsL3_L19_left  = {3,4,5,6,7,8};
-        int[] blocsL3_L19_right = {11,12,13,14,15,16};
-        for (int y : new int[]{3, 19}) {
-            map.addWall(1, y);
-            map.addWall(19, y);
-            for (int x : blocsL3_L19_left)  map.addWall(x, y);
-            for (int x : blocsL3_L19_right) map.addWall(x, y);
-            map.addWall(10, y);
+        // --- LIGNE 2 et LIGNE 18 : #.######.#.######.#
+        int[] blocs_left = {2, 3, 4, 5, 6, 7};
+        int[] blocs_right = {10, 11, 12, 13, 14, 15};
+
+        for (int y : new int[]{2, 18}) {
+            map.addWall(0, y);
+            map.addWall(18, y);
+            for (int x : blocs_left) map.addWall(x, y);
+            for (int x : blocs_right) map.addWall(x, y);
+            map.addWall(9, y);
         }
 
-        // --- LIGNE 4 et LIGNE 18 : #.#......#......#.#
-        for (int y : new int[]{4, 18}) {
-            map.addWall(1, y);
-            map.addWall(3, y);
-            map.addWall(10, y);
-            map.addWall(17, y);
-            map.addWall(19, y);
-        }
-
-        // --- LIGNE 5 et LIGNE 17 : #.#..#...#...#..#.#
-        for (int y : new int[]{5, 17}) {
-            map.addWall(1, y);
-            map.addWall(3, y);
-            map.addWall(6, y);
-            map.addWall(10, y);
-            map.addWall(14, y);
-            map.addWall(17, y);
-            map.addWall(19, y);
-        }
-
-        // --- LIGNE 6 et LIGNE 16 : #....#.#.#.#.#....#
-        for (int y : new int[]{6, 16}) {
-            map.addWall(1, y);
-            map.addWall(6, y);
-            map.addWall(8, y);
-            map.addWall(10, y);
-            map.addWall(12, y);
-            map.addWall(14, y);
-            map.addWall(19, y);
-        }
-
-        // --- LIGNE 7 et LIGNE 15 : #......#...#......#
-        for (int y : new int[]{7, 15}) {
-            map.addWall(1, y);
-            map.addWall(8, y);
-            map.addWall(12, y);
-            map.addWall(19, y);
-        }
-
-        // --- LIGNE 8 et LIGNE 14 : ########...########
-        for (int y : new int[]{8, 14}) {
-            for (int x = 1; x <= 8; x++) map.addWall(x, y);
-            for (int x = 12; x <= 19; x++) map.addWall(x, y);
-        }
-
-        // --- LIGNE 9 et LIGNE 13 : #.##...........##.#
-        for (int y : new int[]{9, 13}) {
-            map.addWall(1, y);
-            map.addWall(3, y);
-            map.addWall(4, y);
+        // --- LIGNE 3 et LIGNE 17 : #.#......#......#.#
+        for (int y : new int[]{3, 17}) {
+            map.addWall(0, y);
+            map.addWall(2, y);
+            map.addWall(9, y);
             map.addWall(16, y);
-            map.addWall(17, y);
-            map.addWall(19, y);
+            map.addWall(18, y);
         }
 
-        // --- LIGNE 10 et LIGNE 12 : #....###...###....#
-        for (int y : new int[]{10, 12}) {
-            map.addWall(1, y);
+        // --- LIGNE 4 et LIGNE 16 : #.#..#...#...#..#.#
+        for (int y : new int[]{4, 16}) {
+            map.addWall(0, y);
+            map.addWall(2, y);
+            map.addWall(5, y);
+            map.addWall(9, y);
+            map.addWall(13, y);
+            map.addWall(16, y);
+            map.addWall(18, y);
+        }
+
+        // --- LIGNE 5 et LIGNE 15 : #....#.#.#.#.#....#
+        for (int y : new int[]{5, 15}) {
+            map.addWall(0, y);
+            map.addWall(5, y);
+            map.addWall(7, y);
+            map.addWall(9, y);
+            map.addWall(11, y);
+            map.addWall(13, y);
+            map.addWall(18, y);
+        }
+
+        // --- LIGNE 6 et LIGNE 14 : #......#...#......#
+        for (int y : new int[]{6, 14}) {
+            map.addWall(0, y);
+            map.addWall(7, y);
+            map.addWall(11, y);
+            map.addWall(18, y);
+        }
+
+        // --- LIGNE 7 et LIGNE 13 : ########...########
+        for (int y : new int[]{7, 13}) {
+            for (int x = 0; x <= 7; x++) map.addWall(x, y);
+            for (int x = 11; x <= 18; x++) map.addWall(x, y);
+        }
+
+        // --- LIGNE 8 et LIGNE 12 : #.##...........##.#
+        for (int y : new int[]{8, 12}) {
+            map.addWall(0, y);
+            map.addWall(2, y);
+            map.addWall(3, y);
+            map.addWall(15, y);
+            map.addWall(16, y);
+            map.addWall(18, y);
+        }
+
+        // --- LIGNE 9 et LIGNE 11 : #....###...###....#
+        for (int y : new int[]{9, 11}) {
+            map.addWall(0, y);
+            map.addWall(5, y);
             map.addWall(6, y);
             map.addWall(7, y);
-            map.addWall(8, y);
+            map.addWall(11, y);
             map.addWall(12, y);
             map.addWall(13, y);
-            map.addWall(14, y);
-            map.addWall(19, y);
+            map.addWall(18, y);
         }
 
-        // --- LIGNE 11 : ###.##.......##.###
+        // --- LIGNE 10 : ###.##.......##.###
         // Bloc gauche
-        for (int x = 1; x <= 3; x++) map.addWall(x, 11);
-        // Petit bloc
-        map.addWall(5, 11);
-        map.addWall(6, 11);
-        // Bloc droit
-        for (int x = 14; x <= 16; x++) map.addWall(x, 11);
-        for (int x = 1; x <= 3; x++) map.addWall(x, 11);
+        for (int x = 0; x <= 2; x++) map.addWall(x, 10);
 
-        // Encadrement final
-        map.addWall(19, 11);
+        // Petit bloc
+        map.addWall(4, 10);
+        map.addWall(5, 10);
+
+        // Bloc droit
+        for (int x = 13; x <= 15; x++) map.addWall(x, 10);
+
+        // Encadrement droit final
+        map.addWall(18, 10);
+
+        // -----------------------------
+        // PLACEMENT JOUEURS / FANTÔMES
+        // -----------------------------
+
+        map.addPlayer(3, 6);
+        map.addGhost_Blue(10, 3);
+        map.addGhost_Pink(5, 1);
+        map.addGhost_Red(14, 9);
+        map.addGhost_Yellow(7, 13);
 
         return map;
     }
-
 }
