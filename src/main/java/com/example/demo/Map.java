@@ -43,6 +43,24 @@ public class Map {
         map[y][x] = WALL;   // ✔ correction x/y
     }
 
+    public void addPlayer(int x, int y) {
+        map[y][x] = PLAYER;   // ✔ correction x/y
+    }
+
+    public void addGhost_Red(int x, int y) {
+        map[y][x] = GHOST_Red;   // ✔ correction x/y
+    }
+    public void addGhost_Blue(int x, int y) {
+        map[y][x] = GHOST_Blue;
+    }
+    public void addGhost_Pink(int x, int y) {
+        map[y][x] = GHOST_Pink;
+    }
+    public void addGhost_Yellow(int x, int y) {
+        map[y][x] = GHOST_Yellow;
+    }
+
+
     /** Lecture d'une case */
     public char getCell(int x, int y) {
         return map[y][x];   // ✔ correction x/y
