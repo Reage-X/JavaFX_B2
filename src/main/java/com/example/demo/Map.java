@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Map {
     private int longueur;
     private int hauteur;
+    private int maxPoint;
     private char[][] map;
 
     public static final char WALL = '#';
@@ -29,19 +30,22 @@ public class Map {
         map = new char[hauteur][longueur];
     }
 
-    public Map() {
-    }
+    public Map() {}
 
     public int getLongueur() {
         return longueur;
     }
-
     public int getHauteur() {
         return hauteur;
     }
-
     public char[][] getMap() {
         return map;
+    }
+    public int getMaxPoint() {
+        return maxPoint;
+    }
+    public void setMaxPoint(int maxPoint) {
+        this.maxPoint = maxPoint;
     }
 
 
@@ -112,6 +116,7 @@ public class Map {
 
         // Remplir toute la map d'orbes par défaut
         m.fillWithOrbs();
+        m.setMaxPoint(196);
 
         m.addGhost_Yellow(8, 9);
         m.addGhost_Blue(9, 9);
@@ -241,6 +246,7 @@ public class Map {
 
         Map map = new Map(19, 21);
         map.fillWithOrbs();
+        map.setMaxPoint(208);
 
         // --- LIGNE 0 et LIGNE 20 : ###################
         for (int x = 0; x <= 18; x++) {

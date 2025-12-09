@@ -46,9 +46,6 @@ public class Compte
     }
     public void setJoueur(Joueur joueur)                    { this.joueur = joueur; }
 
-
-
-
     public void addScore() {
         this.addScore(this.joueur.getScore_jeu());
     }

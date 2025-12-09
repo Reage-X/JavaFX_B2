@@ -3,7 +3,7 @@ import javafx.scene.image.Image;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class Joueur extends Entity{
+public class Joueur extends Entity implements KeyListener{
     private int score_jeu;
     private int nb_vie;
 
@@ -36,8 +36,9 @@ public class Joueur extends Entity{
         this.score_jeu = 0;
     }
 
-
-    public void keyReleased(KeyEvent e) {
+    public void keyTyped(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {}
+    public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             this.setDirection(0);
             this.sprite_frame = pacmanUpImage;
@@ -77,9 +78,6 @@ public class Joueur extends Entity{
         for (Ennemi ennemi : ennemies) {
             if (collision(ennemi, this)) {
                 this.nb_vie -= 1;
-                if (this.nb_vie  == 0) {
-                    //TODO
-                }
                 this.reset();
             }
         }
