@@ -1,14 +1,14 @@
 package com.example.demo;
 
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.awt.event.KeyListener;
 
-public class Main {
-
-
+public class Main implements KeyListener {
 
     public static void main(String[] args)throws SQLException {
         String url = "jdbc:mysql://localhost:3306/javafx_b2?createDatabaseIfNotExist=true";
@@ -16,16 +16,32 @@ public class Main {
         String pass = "";
 
         Connection conn = DriverManager.getConnection(url, user, pass);
-
-
-        Scanner sc = new Scanner(System.in);
-
         if (conn == null) {
             System.out.println("Impossible de se connecter à la base.");
             return;
         }
 
-        Compte compteActuel = null;
+
+        Scanner sc = new Scanner(System.in);
+    }
+
+
+
+    boolean jeuEnCours = true;
+    Map map = new Map();
+    Compte compte = new Compte("test","test");
+
+
+    public void keyTyped(KeyEvent e) {}
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            jeuEnCours = false;
+        }
+    }
+    public void keyReleased(KeyEvent e) {}
+
+
+    private static void menuLoginSign(Scanner sc, Compte compte, Connection conn) throws SQLException {
 
         while (true) {
             System.out.println("\n=== MENU PRINCIPAL ===");
@@ -33,84 +49,69 @@ public class Main {
             System.out.println("2. Créer un compte");
             System.out.println("3. Quitter");
             System.out.print("Choix : ");
-
             int choix = sc.nextInt();
             sc.nextLine();
-
             switch (choix) {
-
                 // -------------------------------------------------
                 // 1) CONNEXION
                 // -------------------------------------------------
                 case 1:
                     System.out.print("Pseudo : ");
                     String pseudo = sc.nextLine();
-
                     System.out.print("Mot de passe : ");
                     String mdp = sc.nextLine();
-
                     try {
-                        compteActuel = Sql.getCompte(pseudo, mdp, conn);
-
-                        if (compteActuel != null) {
+                        compte = Sql.getCompte(pseudo, mdp, conn);
+                        if (compte != null) {
                             System.out.println("Connexion réussie !");
-                            menuCompte(sc, compteActuel, conn);
+                            menuCompte(sc, compte, conn);
                         } else {
                             System.out.println("Identifiants incorrects.");
                         }
-
                     } catch (SQLException e) {
                         System.out.println("Erreur SQL : " + e.getMessage());
                     }
-                    break;
-
-                // -------------------------------------------------
+                    break;// -------------------------------------------------
                 // 2) CREATION DE COMPTE
                 // -------------------------------------------------
                 case 2:
                     System.out.print("Nouveau pseudo : ");
                     String newPseudo = sc.nextLine();
-
-                    while  (!Sql.PseudoExiste(newPseudo, conn)) {
+                    while (!Sql.PseudoExiste(newPseudo, conn)) {
                         System.out.println("Ce pseudo existe déjà !");
                         System.out.println("Pseudo : ");
                         newPseudo = sc.nextLine();
                         break;
                     }
-
                     System.out.print("Mot de passe : ");
                     String newMDP = sc.nextLine();
-
-
                     try {
-
                         Compte cmp = new Compte(newPseudo, newMDP);
                         cmp.setScore(new ArrayList<>());
-
                         if (Sql.addCompte(cmp, conn)) {
                             System.out.println("Compte créé !");
                         } else {
                             System.out.println("Échec de la création.");
                         }
-
                     } catch (SQLException e) {
                         System.out.println("Erreur SQL : " + e.getMessage());
                     }
-                    break;
-
-                // -------------------------------------------------
+                    break;// -------------------------------------------------
                 // QUITTER
                 // -------------------------------------------------
                 case 3:
                     System.out.println("Au revoir !");
-                    try { conn.close(); } catch (Exception ignored) {}
-                    return;
-
-                default:
-                    System.out.println("Choix invalide.");
+                    try {
+                        conn.close();
+                    } catch (Exception ignored) {
+                    }
+                    return; default: System.out.println("Choix invalide.");
             }
         }
     }
+
+
+
 
     // =============================================================
     //           MENU APRES CONNEXION
@@ -186,6 +187,52 @@ public class Main {
 
             } catch (SQLException e) {
                 System.out.println("Erreur SQL : " + e.getMessage());
+            }
+        }
+    }
+
+
+    public void start(Scanner sc) {;
+        System.out.println("Quel niveau voulez-vous jouer ? (1 ou 2)");
+        int niveau = sc.nextInt();
+        while (niveau != 1 && niveau != 2) {
+            System.out.println("Veuillez choisir le niveau 1 ou 2 :");
+            niveau = sc.nextInt();
+        }
+
+        if (niveau == 1) map = map.niveau1();
+        else map = map.niveau2();
+    }
+
+
+    public void play() {
+        while (jeuEnCours)
+        {
+            if(compte.getJoueur().getNb_vie() !=0)
+            {
+                compte.getJoueur().coli_joueur(map.murs, map.points, map.ennemies);
+                for (Ennemi ennemi : map.ennemies) { ennemi.updateMouvement(map.murs); }
+                map.print();
+            }
+            else{
+                System.out.println("GameOver !");
+                jeuEnCours = false;
+                compte.addScore();
+                break;
+            }
+
+            if(compte.getJoueur().getScore_jeu() >= map.getMaxPoint())
+            {
+                System.out.println("Victoire");
+                jeuEnCours = false;
+                compte.addScore();
+                break;
+            }
+
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
             }
         }
     }
