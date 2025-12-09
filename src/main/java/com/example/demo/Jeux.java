@@ -2,9 +2,18 @@ package com.example.demo;
 import java.util.Scanner;
 import java.awt.event.*;
 
-public class Jeux {
+public class Jeux implements KeyListener{
     Map map = new Map();
     Compte compte = new Compte("test","test");
+    Scanner scanner;
+    boolean jeuEnCours = true;
+    public void keyTyped(KeyEvent e) {}
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            jeuEnCours = false;
+        }
+    }
+    public void keyReleased(KeyEvent e) {}
 
     public void start() {
         Scanner scanner = new Scanner(System.in);
@@ -18,9 +27,9 @@ public class Jeux {
         if (niveau == 1) map = map.niveau1();
         else map = map.niveau2();
     }
-    
+
     public void play() {
-        while (KeyEvent.VK_ESCAPE == KeyEvent.VK_ESCAPE)
+        while (jeuEnCours)
         {
             if(compte.getJoueur().getNb_vie() !=0)
             {
@@ -30,6 +39,7 @@ public class Jeux {
             }
             else{
                 System.out.println("GameOver !");
+                jeuEnCours = false;
                 compte.addScore();
                 break;
             }
@@ -38,8 +48,15 @@ public class Jeux {
             if(compte.getJoueur().getScore_jeu() >= map.getMaxPoint())
             {
                 System.out.println("Victoire");
+                jeuEnCours = false;
                 compte.addScore();
                 break;
+            }
+
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
             }
         }
     }
