@@ -1,3 +1,5 @@
+package com.example.demo;
+
 public class Ennemi extends Entity {
     private int direction; // 0:Haut, 1:Droit, 2:Bas, 3:Gauche
 
