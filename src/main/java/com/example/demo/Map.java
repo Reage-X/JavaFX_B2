@@ -51,42 +51,47 @@ public class Map {
     public void fillWithOrbs() {
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < longueur; x++) {
-                if (map[y][x] == EMPTY || map[y][x] == '\0') {
-                    map[y][x] = ORB;
-                    Entity point = new Entity(x,y,32,32);
-                    points.add(point);
-                }
+                map[y][x] = ORB;
+                Entity point = new Entity(x,y,32,32);
+                points.add(point);
             }
         }
     }
 
-    /**
-     * Ajoute un mur
-     */
+
+
     public void addWall(int x, int y) {
-        map[y][x] = WALL;   // ✔ correction x/y
+        map[y][x] = WALL;
         Entity mur = new Entity(x,y,32,32);
         murs.add(mur);
     }
 
     public void addPlayer(int x, int y) {
-        map[y][x] = PLAYER;   // ✔ correction x/y
+        map[y][x] = PLAYER;
     }
 
     public void addGhost_Red(int x, int y) {
-        map[y][x] = GHOST_Red;   // ✔ correction x/y
+        map[y][x] = GHOST_Red;
+        Ennemi ennemi = new Ennemi(x,y,32,32);
+        ennemies.add(ennemi);
     }
 
     public void addGhost_Blue(int x, int y) {
         map[y][x] = GHOST_Blue;
+        Ennemi ennemi = new Ennemi(x,y,32,32);
+        ennemies.add(ennemi);
     }
 
     public void addGhost_Pink(int x, int y) {
         map[y][x] = GHOST_Pink;
+        Ennemi ennemi = new Ennemi(x,y,32,32);
+        ennemies.add(ennemi);
     }
 
     public void addGhost_Yellow(int x, int y) {
         map[y][x] = GHOST_Yellow;
+        Ennemi ennemi = new Ennemi(x,y,32,32);
+        ennemies.add(ennemi);
     }
 
 

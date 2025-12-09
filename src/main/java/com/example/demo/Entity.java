@@ -99,7 +99,7 @@ public class Entity
                 a.y + a.hauteur > b.y;
     }
 
-    void reset()
+    public void reset()
     {
         this.x = this.startX;
         this.y = this.startY;

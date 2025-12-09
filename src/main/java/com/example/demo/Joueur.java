@@ -30,6 +30,12 @@ public class Joueur extends Entity{
         this.score_jeu += score;
     }
 
+    public void reset()
+    {
+        super.reset();
+        this.score_jeu = 0;
+    }
+
 
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -84,8 +90,8 @@ public class Joueur extends Entity{
             if (collision(this, point)) {
                 pointSupp = point;
                 this.score_jeu += 10;
+                points.remove(pointSupp);
             }
         }
-        points.remove(pointSupp);
     }
 }
