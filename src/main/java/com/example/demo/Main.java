@@ -11,7 +11,7 @@ public class Main {
 
 
     public static void main(String[] args)throws SQLException {
-        String url = "jdbc:mysql://localhost:3306/tonDB?createDatabaseIfNotExist=true";
+        String url = "jdbc:mysql://localhost:3306/javafx_b2?createDatabaseIfNotExist=true";
         String user = "route";
         String pass = "";
 
