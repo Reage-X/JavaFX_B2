@@ -16,7 +16,7 @@ public class Map {
     public static final char GHOST_Pink = 'P';
     public static final char GHOST_Yellow = 'Y';
 
-    public static int tailleCase = 64;
+    public static int tailleCase = 32;
     public ArrayList<Entity> murs = new ArrayList<>() ;
     public ArrayList<Entity> points = new ArrayList<>() ;
     public ArrayList<Ennemi> ennemies = new ArrayList<>() ;
@@ -89,22 +89,6 @@ public class Map {
         map[y][x] = GHOST_Yellow;
     }
 
-
-    /**
-     * Lecture d'une case
-     */
-    public char getCell(int x, int y) {
-        return map[y][x];   // ✔ correction x/y
-    }
-
-    /**
-     * Suppression d'une orbe
-     */
-    public void suppOrbAt(int x, int y) {
-        if (map[y][x] == ORB) {
-            map[y][x] = EMPTY;  // ✔ correction x/y
-        }
-    }
 
     public void print() {
         for (int y = 0; y < hauteur; y++) {
