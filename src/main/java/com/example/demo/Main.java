@@ -12,9 +12,13 @@ import static com.example.demo.Map.*;
 
 public class Main implements KeyListener {
 
+    static boolean jeuEnCours = true;
+    static Map map = new Map();
+    static Compte compte = new Compte("test","test");
+
     public static void main(String[] args)throws SQLException {
         String url = "jdbc:mysql://localhost:3306/javafx_b2?createDatabaseIfNotExist=true";
-        String user = "route";
+        String user = "root";
         String pass = "";
 
         Connection conn = DriverManager.getConnection(url, user, pass);
@@ -25,20 +29,16 @@ public class Main implements KeyListener {
 
 
         Scanner sc = new Scanner(System.in);
+
+        menuLoginSign(sc, conn);
+        menuCompte(sc, conn);
+        start(sc);
+        play();
     }
 
 
 
-
-
-
-    boolean jeuEnCours = true;
-    Map map = new Map();
-    Compte compte = new Compte("test","test");
-
-
     public void keyTyped(KeyEvent e) {}
-
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             compte.getJoueur().setDirection(0);
@@ -63,7 +63,7 @@ public class Main implements KeyListener {
     public void keyReleased(KeyEvent e) {}
 
 
-    private static void menuLoginSign(Scanner sc, Compte compte, Connection conn) throws SQLException {
+    private static void menuLoginSign(Scanner sc, Connection conn) throws SQLException {
 
         while (true) {
             System.out.println("\n=== MENU PRINCIPAL ===");
@@ -86,7 +86,7 @@ public class Main implements KeyListener {
                         compte = Sql.getCompte(pseudo, mdp, conn);
                         if (compte != null) {
                             System.out.println("Connexion réussie !");
-                            menuCompte(sc, compte, conn);
+                            menuCompte(sc, conn);
                         } else {
                             System.out.println("Identifiants incorrects.");
                         }
@@ -124,7 +124,6 @@ public class Main implements KeyListener {
                 case 3:
                     System.out.println("Au revoir !");
                     try {
-                        conn.close();
                     } catch (Exception ignored) {
                     }
                     return; default: System.out.println("Choix invalide.");
@@ -138,7 +137,7 @@ public class Main implements KeyListener {
     // =============================================================
     //           MENU APRES CONNEXION
     // =============================================================
-    private static void menuCompte(Scanner sc, Compte compte, Connection conn) {
+    private static void menuCompte(Scanner sc, Connection conn) {
         while (true) {
             System.out.println("\n=== MENU COMPTE (" + compte.getUser_name() + ") ===");
             System.out.println("1. Jouer");
@@ -214,7 +213,7 @@ public class Main implements KeyListener {
     }
 
 
-    public void start(Scanner sc) {;
+    public static void start(Scanner sc) {;
         System.out.println("Quel niveau voulez-vous jouer ? (1 ou 2)");
         int niveau = sc.nextInt();
         while (niveau != 1 && niveau != 2) {
@@ -227,7 +226,7 @@ public class Main implements KeyListener {
     }
 
 
-    public void play() {
+    public static void  play() {
         while (jeuEnCours)
         {
             if(compte.getJoueur().getNb_vie() !=0)
@@ -252,7 +251,7 @@ public class Main implements KeyListener {
             }
 
             try {
-                Thread.sleep(20);
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }

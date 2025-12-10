@@ -2,6 +2,8 @@ package com.example.demo;
 
 import java.util.ArrayList;
 
+import static com.example.demo.Main.compte;
+
 public class Map {
     private int longueur;
     private int hauteur;
@@ -67,6 +69,11 @@ public class Map {
             map[point.getY()][point.getX()] = ORB;
         }
     }
+    public void afficherMur() {
+        for (Entity mur : murs) {
+            map[mur.getY()][mur.getX()] = WALL;
+        }
+    }
 
 
 
@@ -78,6 +85,8 @@ public class Map {
 
     public void addPlayer(int x, int y) {
         map[y][x] = PLAYER;
+        compte.getJoueur().setStartX(x);
+        compte.getJoueur().setStartY(y);
     }
 
     public void addGhost_Red(int x, int y) {
@@ -116,6 +125,7 @@ public class Map {
             }
             System.out.println();
         }
+        System.out.println("\n\n\n\n");
     }
 
 

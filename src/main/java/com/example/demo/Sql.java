@@ -1,56 +1,84 @@
 package com.example.demo;
-import java.sql.*;
 
+import com.example.demo.*;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class Sql {
-    public static Compte getCompte(String pseudo, String MDP, Connection conn) throws SQLException {
-        String sqlCmp = "SELECT * FROM comptes WHERE pseudo = ? AND MDP = ?";
+
+    // Récupération
+    public static Compte getCompte(String pseudo, String mdpDonne, Connection conn) throws SQLException {
+        // 1. On ne cherche QUE par pseudo pour la sécurité
+        String sqlCmp = "SELECT * FROM comptes WHERE pseudo = ?";
         Compte cmp = null;
 
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
             psCmp.setString(1, pseudo);
-            psCmp.setString(2, MDP);
 
             try (ResultSet rsCmp = psCmp.executeQuery()) {
                 if (rsCmp.next()) {
-                    cmp = new Compte(rsCmp.getString("pseudo"), rsCmp.getString("MDP"));
-                    Array sqlScores = rsCmp.getArray("score");
-                    if (sqlScores != null) {
-                        Object[] scores = (Object[]) sqlScores.getArray();
-                        for (Object score : scores) {
-                            if (score instanceof Number) {
-                                cmp.addScore(((Number) score).intValue());
+                    // 2. Vérification basique du MDP (En production, utilise un Hash !)
+                    String mdpStocke = rsCmp.getString("MDP");
+                    if (!mdpStocke.equals(mdpDonne)) {
+                        return null; // Mauvais mot de passe
+                    }
+
+                    cmp = new Compte(rsCmp.getString("pseudo"), mdpStocke);
+
+                    // 3. Lecture du score stocké en TEXT/JSON (ex: "[10, 200]")
+                    String jsonScores = rsCmp.getString("score");
+                    if (jsonScores != null && !jsonScores.isEmpty() && !jsonScores.equals("[]")) {
+                        // On retire les crochets [ ] et on coupe aux virgules
+                        String clean = jsonScores.replace("[", "").replace("]", "");
+                        String[] parts = clean.split(",");
+
+                        for (String part : parts) {
+                            try {
+                                cmp.addScore(Integer.parseInt(part.trim()));
+                            } catch (NumberFormatException e) {
+                                // Ignorer les erreurs de parsing
                             }
                         }
                     }
-                } else {
-                    return null;
                 }
             }
         }
         return cmp;
     }
 
+    // Ajout
     public static boolean addCompte(Compte compte, Connection conn) throws SQLException {
+        // Note: La colonne 'score' dans la BDD doit être de type TEXT ou JSON
         String sqlCmp = "INSERT INTO comptes (pseudo, MDP, score) VALUES (?, ?, ?)";
-        try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp, Statement.RETURN_GENERATED_KEYS)) {
+
+        try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
             psCmp.setString(1, compte.getUser_name());
             psCmp.setString(2, compte.getMDP());
-            Object[] scoresArray = compte.getScore() != null ? compte.getScore().toArray() : new Object[0];
-            Array sqlScores = conn.createArrayOf("INTEGER", scoresArray);
-            psCmp.setArray(3, sqlScores);
+
+            // 4. Conversion de l'ArrayList en String format "[1, 2, 3]"
+            String scoreString = compte.getScore().toString();
+
+            psCmp.setString(3, scoreString); // On envoie une String, pas un Array SQL
+
             return psCmp.executeUpdate() > 0;
         }
     }
 
+    // Mise à jour
     public static boolean updateScore(Compte compte, Connection conn) throws SQLException {
-        String sqlCmp = "UPDATE comptes SET score = ? WHERE pseudo = ? AND MDP = ?";
+        String sqlCmp = "UPDATE comptes SET score = ? WHERE pseudo = ?";
+
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
-            Object[] scoresArray = compte.getScore() != null ? compte.getScore().toArray() : new Object[0];
-            Array sqlScores = conn.createArrayOf("INTEGER", scoresArray);
-            psCmp.setArray(1, sqlScores);
+            // Conversion ArrayList -> String
+            String scoreString = compte.getScore().toString();
+
+            psCmp.setString(1, scoreString);
             psCmp.setString(2, compte.getUser_name());
-            psCmp.setString(3, compte.getMDP());
+            // Inutile de vérifier le MDP pour une mise à jour de score si l'objet est déjà chargé
+
             return psCmp.executeUpdate() > 0;
         }
     }

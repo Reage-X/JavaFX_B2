@@ -15,6 +15,8 @@ public class Compte
     {
         this.user_name = user_name;
         this.MDP = MDP;
+        Joueur j = new Joueur();
+        this.setJoueur(j);
     }
 
 

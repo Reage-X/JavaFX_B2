@@ -74,28 +74,30 @@ public class Entity
         switch (this.direction) {
             case 0: // Haut
                 this.dx = 0;
-                this.dy = -tailleCase / 4;
+                this.dy = -1/*tailleCase / 4*/;
                 break;
             case 2: // Bas
                 this.dx = 0;
-                this.dy = tailleCase / 4;
+                this.dy = 1/*tailleCase / 4*/;
                 break;
             case 3: // Gauche
-                this.dx = -tailleCase / 4;
+                this.dx = -1 /*tailleCase / 4*/;
                 this.dy = 0;
                 break;
             case 1: // Droit
-                this.dx = tailleCase / 4;
+                this.dx = 1 /*tailleCase / 4*/;
                 this.dy = 0;
                 break;
         }
     }
 
     public boolean collision(Entity a, Entity b) {
-        return  a.x < b.x /*+ b.largeur*/ &&
-                a.x /*+ a.largeur*/ > b.x &&
-                a.y < b.y /*+ b.hauteur*/ &&
-                a.y /*+ a.hauteur*/ > b.y;
+        return  a.x == b.x && a.y == b.y;
+
+        /*a.x < b.x + b.largeur &&
+                a.x + a.largeur > b.x &&
+                a.y < b.y + b.hauteur &&
+                a.y + a.hauteur > b.y;*/
     }
 
     public void reset()

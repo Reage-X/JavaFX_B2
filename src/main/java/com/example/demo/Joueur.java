@@ -13,8 +13,13 @@ public class Joueur extends Entity{
     private Image pacmanLeftImage;
     private Image pacmanRightImage;
 
-    public Joueur(int startX, int startY, int largeur, int hauteur) {
-        super(startX, startY, largeur, hauteur);
+    public Joueur(int startX, int startY) {
+        super(startX, startY, 32, 32);
+        this.score_jeu = 0;
+        this.nb_vie = 3;
+    }
+    public Joueur() {
+        super(0,0,32,32);
         this.score_jeu = 0;
         this.nb_vie = 3;
     }

@@ -18,12 +18,21 @@ public class Ennemi extends Entity {
         map.getMap()[this.y][this.x] = EMPTY;
         this.x += this.dx;
         this.y += this.dy;
-        for (Entity mur : map.murs) {
-            if (collision(this, mur)) {
-                this.x -= this.dx;
-                this.y -= this.dy;
-                this.setDirection(rand.nextInt(4));
-                this.updateDx_Dy();
+        if (this.y <= 0 || this.y >= map.getHauteur() ||
+                this.x <= 0 || this.x >= map.getLongueur()) {
+            this.x -= this.dx;
+            this.y -= this.dy;
+            this.setDirection(rand.nextInt(4));
+            this.updateDx_Dy();
+        }
+        else {
+            for (Entity mur : map.murs) {
+                if (collision(this, mur)) {
+                    this.x -= this.dx;
+                    this.y -= this.dy;
+                    this.setDirection(rand.nextInt(4));
+                    this.updateDx_Dy();
+                }
             }
         }
         map.getMap()[this.y][this.x] = couleur;
