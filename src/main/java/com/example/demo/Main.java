@@ -9,6 +9,7 @@ import java.util.Scanner;
 import java.awt.event.KeyListener;
 
 import static com.example.demo.Map.*;
+import static com.example.demo.Sql.updateScore;
 
 public class Main implements KeyListener {
 
@@ -154,7 +155,7 @@ public class Main implements KeyListener {
                     // -------------------------------------------------
                     case 1:
                         start(sc);
-                        play();
+                        play(conn);
                         break;
 
                     // -------------------------------------------------
@@ -222,7 +223,7 @@ public class Main implements KeyListener {
         else map = map.niveau2();
     }
 
-    public static void  play() {
+    public static void  play(Connection conn) throws SQLException {
         while (jeuEnCours)
         {
             if(compte.getJoueur().getNb_vie() !=0)
@@ -240,7 +241,7 @@ public class Main implements KeyListener {
                         "\n"+"derive: "+compte.getJoueur().getDx()+","+compte.getJoueur().getDy()+
                         "\n"+"direction: "+compte.getJoueur().getDirection());*/
                 //compte.getJoueur().setNb_vie(compte.getJoueur().getNb_vie()-1);
-                //compte.getJoueur().addScore(100);
+                compte.getJoueur().addScore(100);
                 map.print();
             }
             else{
@@ -248,6 +249,7 @@ public class Main implements KeyListener {
                 System.out.println("GameOver !");
                 jeuEnCours = false;
                 compte.addScore();
+                updateScore(compte, conn);
                 break;
             }
 
@@ -257,6 +259,7 @@ public class Main implements KeyListener {
                 System.out.println("Victoire");
                 jeuEnCours = false;
                 compte.addScore();
+                updateScore(compte, conn);
                 break;
             }
 

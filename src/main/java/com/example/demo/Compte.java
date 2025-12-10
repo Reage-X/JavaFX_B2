@@ -1,6 +1,7 @@
 package com.example.demo;
 import java.util.ArrayList;
 import java.util.Comparator;
+import static com.example.demo.Main.jeuEnCours;
 
 public class Compte
 {
@@ -40,9 +41,6 @@ public class Compte
     public void setMDP(String MDP)                          { this.MDP = MDP; }
     public void setScore(ArrayList<Integer> score)          { this.score = score; }
     public void addScore(Integer nouveauScore) {
-        if (this.score == null) {
-            this.score = new ArrayList<>();
-        }
         if (nouveauScore >= 0) {
             this.score.add(nouveauScore);
             this.score.sort(Comparator.reverseOrder());
@@ -51,6 +49,8 @@ public class Compte
     public void setJoueur(Joueur joueur)                    { this.joueur = joueur; }
 
     public void addScore() {
-        this.score.add(this.joueur.getScore_jeu());
+        this.addScore(this.joueur.getScore_jeu());
+        this.joueur.setScore_jeu(0);
+        jeuEnCours = true;
     }
 }

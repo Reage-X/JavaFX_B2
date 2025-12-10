@@ -68,7 +68,7 @@ public class Sql {
     }
 
     // Mise à jour
-    public static boolean updateScore(Compte compte, Connection conn) throws SQLException {
+    public static void updateScore(Compte compte, Connection conn) throws SQLException {
         String sqlCmp = "UPDATE comptes SET score = ? WHERE pseudo = ?";
 
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
@@ -77,9 +77,6 @@ public class Sql {
 
             psCmp.setString(1, scoreString);
             psCmp.setString(2, compte.getUser_name());
-            // Inutile de vérifier le MDP pour une mise à jour de score si l'objet est déjà chargé
-
-            return psCmp.executeUpdate() > 0;
         }
     }
 
