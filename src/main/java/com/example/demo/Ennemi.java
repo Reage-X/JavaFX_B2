@@ -1,8 +1,12 @@
 package com.example.demo;
 
-import java.util.ArrayList;
+import static com.example.demo.Map.*;
 
 public class Ennemi extends Entity {
+    private char couleur;
+
+
+    public void setCouleur(char couleur) { this.couleur = couleur; }
 
     public Ennemi(int startX, int startY,int largeur, int hauteur) {
         super(startX, startY, largeur, hauteur);
@@ -10,10 +14,11 @@ public class Ennemi extends Entity {
     }
 
 
-    void updateMouvement(ArrayList<Entity> murs) {
+    void updateMouvement(Map map) {
+        map.getMap()[this.y][this.x] = EMPTY;
         this.x += this.dx;
         this.y += this.dy;
-        for (Entity mur : murs) {
+        for (Entity mur : map.murs) {
             if (collision(this, mur)) {
                 this.x -= this.dx;
                 this.y -= this.dy;
@@ -21,5 +26,6 @@ public class Ennemi extends Entity {
                 this.updateDx_Dy();
             }
         }
+        map.getMap()[this.y][this.x] = couleur;
     }
 }

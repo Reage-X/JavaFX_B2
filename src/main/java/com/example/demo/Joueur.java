@@ -1,7 +1,8 @@
 package com.example.demo;
 import javafx.scene.image.Image;
 import java.awt.event.*;
-import java.util.ArrayList;
+import static com.example.demo.Map.*;
+
 
 public class Joueur extends Entity{
     private int score_jeu;
@@ -30,10 +31,10 @@ public class Joueur extends Entity{
         this.score_jeu += score;
     }
 
-    public void reset()
+    public void reset(Map map)
     {
         super.reset();
-        this.score_jeu = 0;
+        map.getMap()[this.startY][this.startX] = PLAYER;
     }
 
     public void changeSprit() {
@@ -53,10 +54,9 @@ public class Joueur extends Entity{
         }
     }
 
-
-    public void coli_joueur(ArrayList<Entity> murs, ArrayList<Entity> points, ArrayList<Ennemi> ennemies) {
+    public void coli_joueur(Map map) {
         //check wall collisions
-        for (Entity mur : murs) {
+        for (Entity mur : map.murs) {
             if (collision(this, mur)) {
                 this.x -= this.dx;
                 this.y -= this.dy;
@@ -65,20 +65,22 @@ public class Joueur extends Entity{
         }
 
         //check ghost collisions
-        for (Ennemi ennemi : ennemies) {
+        for (Ennemi ennemi : map.ennemies) {
             if (collision(ennemi, this)) {
                 this.nb_vie -= 1;
-                this.reset();
+                map.getMap()[this.getY()][this.getX()] = EMPTY;
+                this.reset(map);
             }
         }
 
         //check food collision
         Entity pointSupp = null;
-        for (Entity point : points) {
+        for (Entity point : map.points) {
             if (collision(this, point)) {
                 pointSupp = point;
+                map.getMap()[point.getY()][point.getX()] = EMPTY;
                 this.score_jeu += 10;
-                points.remove(pointSupp);
+                map.points.remove(pointSupp);
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.example.demo;
 import javafx.scene.image.Image;
-import java.util.ArrayList;
 import java.util.Random;
 
 public class Entity
@@ -93,10 +92,10 @@ public class Entity
     }
 
     public boolean collision(Entity a, Entity b) {
-        return  a.x < b.x + b.largeur &&
-                a.x + a.largeur > b.x &&
-                a.y < b.y + b.hauteur &&
-                a.y + a.hauteur > b.y;
+        return  a.x < b.x /*+ b.largeur*/ &&
+                a.x /*+ a.largeur*/ > b.x &&
+                a.y < b.y /*+ b.hauteur*/ &&
+                a.y /*+ a.hauteur*/ > b.y;
     }
 
     public void reset()

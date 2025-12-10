@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.awt.event.KeyListener;
 
+import static com.example.demo.Map.*;
+
 public class Main implements KeyListener {
 
     public static void main(String[] args)throws SQLException {
@@ -56,6 +58,7 @@ public class Main implements KeyListener {
         compte.getJoueur().changeSprit();
         compte.getJoueur().setX(compte.getJoueur().getX() + compte.getJoueur().getDx());
         compte.getJoueur().setY(compte.getJoueur().getY() + compte.getJoueur().getDy());
+        map.getMap()[compte.getJoueur().getY()][compte.getJoueur().getX()] = PLAYER ;
     }
     public void keyReleased(KeyEvent e) {}
 
@@ -229,8 +232,8 @@ public class Main implements KeyListener {
         {
             if(compte.getJoueur().getNb_vie() !=0)
             {
-                compte.getJoueur().coli_joueur(map.murs, map.points, map.ennemies);
-                for (Ennemi ennemi : map.ennemies) { ennemi.updateMouvement(map.murs); }
+                compte.getJoueur().coli_joueur(map);
+                for (Ennemi ennemi : map.ennemies) { ennemi.updateMouvement(map); }
                 map.print();
             }
             else{

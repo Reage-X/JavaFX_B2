@@ -62,6 +62,12 @@ public class Map {
         }
     }
 
+    public void afficherOrb() {
+        for (Entity point : points) {
+            map[point.getY()][point.getX()] = ORB;
+        }
+    }
+
 
 
     public void addWall(int x, int y) {
@@ -77,24 +83,28 @@ public class Map {
     public void addGhost_Red(int x, int y) {
         map[y][x] = GHOST_Red;
         Ennemi ennemi = new Ennemi(x,y,32,32);
+        ennemi.setCouleur(GHOST_Red) ;
         ennemies.add(ennemi);
     }
 
     public void addGhost_Blue(int x, int y) {
         map[y][x] = GHOST_Blue;
         Ennemi ennemi = new Ennemi(x,y,32,32);
+        ennemi.setCouleur(GHOST_Blue) ;
         ennemies.add(ennemi);
     }
 
     public void addGhost_Pink(int x, int y) {
         map[y][x] = GHOST_Pink;
         Ennemi ennemi = new Ennemi(x,y,32,32);
+        ennemi.setCouleur(GHOST_Pink) ;
         ennemies.add(ennemi);
     }
 
     public void addGhost_Yellow(int x, int y) {
         map[y][x] = GHOST_Yellow;
         Ennemi ennemi = new Ennemi(x,y,32,32);
+        ennemi.setCouleur(GHOST_Yellow) ;
         ennemies.add(ennemi);
     }
 
