@@ -16,6 +16,8 @@ public class Compte
         this.user_name = user_name;
         this.MDP = MDP;
         Joueur j = new Joueur();
+        ArrayList<Integer> score = new ArrayList<>();
+        this.setScore(score);
         this.setJoueur(j);
     }
 
@@ -49,6 +51,6 @@ public class Compte
     public void setJoueur(Joueur joueur)                    { this.joueur = joueur; }
 
     public void addScore() {
-        this.addScore(this.joueur.getScore_jeu());
+        this.score.add(this.joueur.getScore_jeu());
     }
 }

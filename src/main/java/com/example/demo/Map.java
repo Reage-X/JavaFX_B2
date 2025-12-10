@@ -87,6 +87,8 @@ public class Map {
         map[y][x] = PLAYER;
         compte.getJoueur().setStartX(x);
         compte.getJoueur().setStartY(y);
+        compte.getJoueur().setX(x);
+        compte.getJoueur().setY(y);
     }
 
     public void addGhost_Red(int x, int y) {

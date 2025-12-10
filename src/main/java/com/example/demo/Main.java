@@ -10,7 +10,7 @@ import java.awt.event.KeyListener;
 
 import static com.example.demo.Map.*;
 
-public class Main /*implements KeyListener*/ {
+public class Main implements KeyListener {
 
     static boolean jeuEnCours = true;
     static Map map = new Map();
@@ -34,7 +34,6 @@ public class Main /*implements KeyListener*/ {
         menuCompte(sc, conn);
     }
 
-    /*
     public void keyTyped(KeyEvent e) {}
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -58,7 +57,7 @@ public class Main /*implements KeyListener*/ {
         map.getMap()[compte.getJoueur().getY()][compte.getJoueur().getX()] = PLAYER ;
     }
     public void keyReleased(KeyEvent e) {}
-    */
+
 
     private static void menuLoginSign(Scanner sc, Connection conn) throws SQLException {
 
@@ -121,14 +120,16 @@ public class Main /*implements KeyListener*/ {
                 case 3:
                     System.out.println("Au revoir !");
                     try {
+                        sc.close();
+                        conn.close();
                     } catch (Exception ignored) {
                     }
-                    return; default: System.out.println("Choix invalide.");
+                    return;
+                default:
+                    System.out.println("Choix invalide.");
             }
         }
     }
-
-
 
     // =============================================================
     //           MENU APRES CONNEXION
@@ -238,9 +239,12 @@ public class Main /*implements KeyListener*/ {
                 System.out.println("coordonnées: "+compte.getJoueur().getX()+","+compte.getJoueur().getY()+
                         "\n"+"derive: "+compte.getJoueur().getDx()+","+compte.getJoueur().getDy()+
                         "\n"+"direction: "+compte.getJoueur().getDirection());*/
+                //compte.getJoueur().setNb_vie(compte.getJoueur().getNb_vie()-1);
+                //compte.getJoueur().addScore(100);
                 map.print();
             }
             else{
+                System.out.println("\n\n");
                 System.out.println("GameOver !");
                 jeuEnCours = false;
                 compte.addScore();
@@ -249,6 +253,7 @@ public class Main /*implements KeyListener*/ {
 
             if(compte.getJoueur().getScore_jeu() >= map.getMaxPoint())
             {
+                System.out.println("\n\n");
                 System.out.println("Victoire");
                 jeuEnCours = false;
                 compte.addScore();
