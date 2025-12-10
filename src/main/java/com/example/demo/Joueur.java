@@ -3,7 +3,7 @@ import javafx.scene.image.Image;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class Joueur extends Entity implements KeyListener{
+public class Joueur extends Entity{
     private int score_jeu;
     private int nb_vie;
 
@@ -36,31 +36,21 @@ public class Joueur extends Entity implements KeyListener{
         this.score_jeu = 0;
     }
 
-    public void keyTyped(KeyEvent e) {}
-    public void keyReleased(KeyEvent e) {}
-    public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_UP) {
-            this.setDirection(0);
-            this.sprite_frame = pacmanUpImage;
-            this.updateDx_Dy();
+    public void changeSprit() {
+        switch (this.getDirection()) {
+            case 0:
+                this.sprite_frame = pacmanUpImage;
+                break;
+            case 2:
+                this.sprite_frame = pacmanDownImage;
+                break;
+            case 3:
+                this.sprite_frame = pacmanLeftImage;
+                break;
+            case 1:
+                this.sprite_frame = pacmanRightImage;
+                break;
         }
-        else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-            this.setDirection(2);
-            this.sprite_frame = pacmanDownImage;
-            this.updateDx_Dy();
-        }
-        else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            this.setDirection(3);
-            this.sprite_frame = pacmanLeftImage;
-            this.updateDx_Dy();
-        }
-        else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            this.setDirection(1);
-            this.sprite_frame = pacmanRightImage;
-            this.updateDx_Dy();
-        }
-        this.x += this.dx;
-        this.y += this.dy;
     }
 
 

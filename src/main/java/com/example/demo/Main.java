@@ -27,16 +27,35 @@ public class Main implements KeyListener {
 
 
 
+
+
+
     boolean jeuEnCours = true;
     Map map = new Map();
     Compte compte = new Compte("test","test");
 
 
     public void keyTyped(KeyEvent e) {}
+
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
+            compte.getJoueur().setDirection(0);
+            compte.getJoueur().updateDx_Dy();
+        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            compte.getJoueur().setDirection(2);
+            compte.getJoueur().updateDx_Dy();
+        } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            compte.getJoueur().setDirection(3);
+            compte.getJoueur().updateDx_Dy();
+        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            compte.getJoueur().setDirection(1);
+            compte.getJoueur().updateDx_Dy();
+        } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             jeuEnCours = false;
         }
+        compte.getJoueur().changeSprit();
+        compte.getJoueur().setX(compte.getJoueur().getX() + compte.getJoueur().getDx());
+        compte.getJoueur().setY(compte.getJoueur().getY() + compte.getJoueur().getDy());
     }
     public void keyReleased(KeyEvent e) {}
 
