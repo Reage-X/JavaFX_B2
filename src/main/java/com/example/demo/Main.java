@@ -96,11 +96,10 @@ public class Main implements KeyListener {
                 case 2:
                     System.out.print("Nouveau pseudo : ");
                     String newPseudo = sc.nextLine();
-                    while (!Sql.PseudoExiste(newPseudo, conn)) {
+                    while (Sql.PseudoExiste(newPseudo, conn)) {
                         System.out.println("Ce pseudo existe déjà !");
                         System.out.println("Pseudo : ");
                         newPseudo = sc.nextLine();
-                        break;
                     }
                     System.out.print("Mot de passe : ");
                     String newMDP = sc.nextLine();

@@ -11,7 +11,6 @@ public class Sql {
 
     // Récupération
     public static Compte getCompte(String pseudo, String mdpDonne, Connection conn) throws SQLException {
-        // 1. On ne cherche QUE par pseudo pour la sécurité
         String sqlCmp = "SELECT * FROM comptes WHERE pseudo = ?";
         Compte cmp = null;
 
@@ -20,18 +19,18 @@ public class Sql {
 
             try (ResultSet rsCmp = psCmp.executeQuery()) {
                 if (rsCmp.next()) {
-                    // 2. Vérification basique du MDP (En production, utilise un Hash !)
+                    // Vérification du mot de passe hashé
                     String mdpStocke = rsCmp.getString("MDP");
-                    if (!mdpStocke.equals(mdpDonne)) {
+                    if (!PasswordUtil.verifyPassword(mdpDonne, mdpStocke)) {
                         return null; // Mauvais mot de passe
                     }
 
+                    // On stocke le hash dans l'objet Compte (pas le mot de passe en clair)
                     cmp = new Compte(rsCmp.getString("pseudo"), mdpStocke);
 
-                    // 3. Lecture du score stocké en TEXT/JSON (ex: "[10, 200]")
+                    // Lecture du score
                     String jsonScores = rsCmp.getString("score");
                     if (jsonScores != null && !jsonScores.isEmpty() && !jsonScores.equals("[]")) {
-                        // On retire les crochets [ ] et on coupe aux virgules
                         String clean = jsonScores.replace("[", "").replace("]", "");
                         String[] parts = clean.split(",");
 
@@ -51,19 +50,26 @@ public class Sql {
 
     // Ajout
     public static boolean addCompte(Compte compte, Connection conn) throws SQLException {
-        // Note: La colonne 'score' dans la BDD doit être de type TEXT ou JSON
         String sqlCmp = "INSERT INTO comptes (pseudo, MDP, score) VALUES (?, ?, ?)";
 
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
             psCmp.setString(1, compte.getUser_name());
-            psCmp.setString(2, compte.getMDP());
+            
+            // Hash le mot de passe avant de le stocker
+            String hashedPassword = PasswordUtil.hashPassword(compte.getMDP());
+            psCmp.setString(2, hashedPassword);
 
-            // 4. Conversion de l'ArrayList en String format "[1, 2, 3]"
             String scoreString = compte.getScore().toString();
+            psCmp.setString(3, scoreString);
 
-            psCmp.setString(3, scoreString); // On envoie une String, pas un Array SQL
-
-            return psCmp.executeUpdate() > 0;
+            boolean result = psCmp.executeUpdate() > 0;
+            
+            // Mettre à jour le compte avec le hash
+            if (result) {
+                compte.setMDP(hashedPassword);
+            }
+            
+            return result;
         }
     }
 
@@ -72,11 +78,10 @@ public class Sql {
         String sqlCmp = "UPDATE comptes SET score = ? WHERE pseudo = ?";
 
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
-            // Conversion ArrayList -> String
             String scoreString = compte.getScore().toString();
-
             psCmp.setString(1, scoreString);
             psCmp.setString(2, compte.getUser_name());
+            psCmp.executeUpdate();
         }
     }
 
@@ -99,7 +104,7 @@ public class Sql {
         try (PreparedStatement statement = conn.prepareStatement(query)) {
             statement.setString(1, compte.getUser_name());
             statement.setString(2, oldUserName);
-            statement.setString(3, compte.getMDP());
+            statement.setString(3, compte.getMDP()); // Le MDP est déjà hashé dans l'objet
             return statement.executeUpdate() > 0;
         }
     }
@@ -107,10 +112,20 @@ public class Sql {
     public static boolean updateMDP(Compte compte, String oldMDP, Connection conn) throws SQLException {
         String sqlCmp = "UPDATE comptes SET MDP = ? WHERE pseudo = ? AND MDP = ?";
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
-            psCmp.setString(1, compte.getMDP());
+            // Hash le nouveau mot de passe
+            String newHashedPassword = PasswordUtil.hashPassword(compte.getMDP());
+            psCmp.setString(1, newHashedPassword);
             psCmp.setString(2, compte.getUser_name());
-            psCmp.setString(3, oldMDP);
-            return psCmp.executeUpdate() > 0;
+            psCmp.setString(3, oldMDP); // oldMDP est déjà le hash stocké
+            
+            boolean result = psCmp.executeUpdate() > 0;
+            
+            // Mettre à jour le compte avec le nouveau hash
+            if (result) {
+                compte.setMDP(newHashedPassword);
+            }
+            
+            return result;
         }
     }
 
@@ -118,7 +133,7 @@ public class Sql {
         String sqlCmp = "DELETE FROM comptes WHERE pseudo = ? AND MDP = ?";
         try (PreparedStatement psCmp = conn.prepareStatement(sqlCmp)) {
             psCmp.setString(1, compte.getUser_name());
-            psCmp.setString(2, compte.getMDP());
+            psCmp.setString(2, compte.getMDP()); // Le MDP est déjà hashé
             return psCmp.executeUpdate() > 0;
         }
     }
