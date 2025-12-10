@@ -1,17 +1,14 @@
 package com.example.demo;
 
-import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.awt.event.KeyListener;
 
-import static com.example.demo.Map.*;
 import static com.example.demo.Sql.updateScore;
 
-public class Main implements KeyListener {
+public class Main {
 
     static boolean jeuEnCours = true;
     static Map map = new Map();
@@ -34,30 +31,6 @@ public class Main implements KeyListener {
         menuLoginSign(sc, conn);
         menuCompte(sc, conn);
     }
-
-    public void keyTyped(KeyEvent e) {}
-    public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_UP) {
-            compte.getJoueur().setDirection(0);
-            compte.getJoueur().updateDx_Dy();
-        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-            compte.getJoueur().setDirection(2);
-            compte.getJoueur().updateDx_Dy();
-        } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            compte.getJoueur().setDirection(3);
-            compte.getJoueur().updateDx_Dy();
-        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            compte.getJoueur().setDirection(1);
-            compte.getJoueur().updateDx_Dy();
-        } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            jeuEnCours = false;
-        }
-        compte.getJoueur().changeSprit();
-        compte.getJoueur().setX(compte.getJoueur().getX() + compte.getJoueur().getDx());
-        compte.getJoueur().setY(compte.getJoueur().getY() + compte.getJoueur().getDy());
-        map.getMap()[compte.getJoueur().getY()][compte.getJoueur().getX()] = PLAYER ;
-    }
-    public void keyReleased(KeyEvent e) {}
 
 
     private static void menuLoginSign(Scanner sc, Connection conn) throws SQLException {

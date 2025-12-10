@@ -19,12 +19,9 @@ public class Map {
     public static final char GHOST_Pink = 'P';
     public static final char GHOST_Yellow = 'Y';
 
-    public static int tailleCase = 32;
-    public ArrayList<Entity> murs = new ArrayList<>() ;
-    public ArrayList<Entity> points = new ArrayList<>() ;
-    public ArrayList<Ennemi> ennemies = new ArrayList<>() ;
-
-
+    public ArrayList<Entity> murs = new ArrayList<>();
+    public ArrayList<Entity> points = new ArrayList<>();
+    public ArrayList<Ennemi> ennemies = new ArrayList<>();
 
     public Map(int longueur, int hauteur) {
         this.longueur = longueur;
@@ -50,7 +47,6 @@ public class Map {
         this.maxPoint = maxPoint;
     }
 
-
     /**
      * Remplit la carte d'orbes uniquement dans les cases EMPTY ou non initialisées
      */
@@ -58,28 +54,50 @@ public class Map {
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < longueur; x++) {
                 map[y][x] = ORB;
-                Entity point = new Entity(x,y,32,32);
+                Entity point = new Entity(x, y, 32, 32);
                 points.add(point);
             }
         }
     }
 
-    public void afficherOrb() {
-        for (Entity point : points) {
-            map[point.getY()][point.getX()] = ORB;
+    /**
+     * Retourne le caractère à afficher à une position donnée
+     * sans modifier la matrice map
+     * Priorité : Joueur > Ennemis > Murs > Points > Vide
+     */
+    public char getCharAt(int x, int y) {
+        // Vérifier si c'est le joueur
+        if (compte.getJoueur().getX() == x && compte.getJoueur().getY() == y) {
+            return PLAYER;
         }
-    }
-    public void afficherMur() {
+
+        // Vérifier si c'est un ennemi
+        for (Ennemi e : ennemies) {
+            if (e.getX() == x && e.getY() == y) {
+                return e.getCouleur().charAt(0);
+            }
+        }
+
+        // Vérifier si c'est un mur
         for (Entity mur : murs) {
-            map[mur.getY()][mur.getX()] = WALL;
+            if (mur.getX() == x && mur.getY() == y) {
+                return WALL;
+            }
         }
+
+        // Vérifier si c'est un point
+        for (Entity point : points) {
+            if (point.getX() == x && point.getY() == y) {
+                return ORB;
+            }
+        }
+
+        return EMPTY;
     }
-
-
 
     public void addWall(int x, int y) {
         map[y][x] = WALL;
-        Entity mur = new Entity(x,y,32,32);
+        Entity mur = new Entity(x, y, 32, 32);
         murs.add(mur);
     }
 
@@ -93,32 +111,31 @@ public class Map {
 
     public void addGhost_Red(int x, int y) {
         map[y][x] = GHOST_Red;
-        Ennemi ennemi = new Ennemi(x,y,32,32);
-        ennemi.setCouleur(GHOST_Red) ;
+        Ennemi ennemi = new Ennemi(x, y, 32, 32);
+        ennemi.setCouleur(GHOST_Red);
         ennemies.add(ennemi);
     }
 
     public void addGhost_Blue(int x, int y) {
         map[y][x] = GHOST_Blue;
-        Ennemi ennemi = new Ennemi(x,y,32,32);
-        ennemi.setCouleur(GHOST_Blue) ;
+        Ennemi ennemi = new Ennemi(x, y, 32, 32);
+        ennemi.setCouleur(GHOST_Blue);
         ennemies.add(ennemi);
     }
 
     public void addGhost_Pink(int x, int y) {
         map[y][x] = GHOST_Pink;
-        Ennemi ennemi = new Ennemi(x,y,32,32);
-        ennemi.setCouleur(GHOST_Pink) ;
+        Ennemi ennemi = new Ennemi(x, y, 32, 32);
+        ennemi.setCouleur(GHOST_Pink);
         ennemies.add(ennemi);
     }
 
     public void addGhost_Yellow(int x, int y) {
         map[y][x] = GHOST_Yellow;
-        Ennemi ennemi = new Ennemi(x,y,32,32);
-        ennemi.setCouleur(GHOST_Yellow) ;
+        Ennemi ennemi = new Ennemi(x, y, 32, 32);
+        ennemi.setCouleur(GHOST_Yellow);
         ennemies.add(ennemi);
     }
-
 
     public void print() {
         System.out.println("\n\n\n\n");
@@ -130,9 +147,7 @@ public class Map {
         }
     }
 
-
     public Map niveau1() {
-
         // Carte 19x21 → index max = [18][20]
         Map m = new Map(19, 21);
 
@@ -149,7 +164,6 @@ public class Map {
         // ---------------------------------------------------------
         // 1. BORDURES EXTÉRIEURES
         // ---------------------------------------------------------
-
         // Ligne du haut (y=0) et du bas (y=20)
         for (int x = 0; x < 19; x++) {
             m.addWall(x, 0);
@@ -172,7 +186,7 @@ public class Map {
         for (int x = 5; x <= 7; x++) m.addWall(x, 2);
         for (int x = 11; x <= 13; x++) m.addWall(x, 2);
         for (int x = 15; x <= 16; x++) m.addWall(x, 2);
-        m.addWall(9, 2); // pilier central
+        m.addWall(9, 2);
 
         // ---------------------------------------------------------
         // 3. LIGNE 5 (y = 4)
@@ -265,7 +279,6 @@ public class Map {
     }
 
     public Map niveau2() {
-
         Map map = new Map(19, 21);
         map.fillWithOrbs();
         map.setMaxPoint(208);
@@ -362,23 +375,13 @@ public class Map {
         }
 
         // --- LIGNE 10 : ###.##.......##.###
-        // Bloc gauche
         for (int x = 0; x <= 2; x++) map.addWall(x, 10);
-
-        // Petit bloc
         map.addWall(4, 10);
         map.addWall(5, 10);
-
-        // Bloc droit
         for (int x = 13; x <= 15; x++) map.addWall(x, 10);
-
-        // Encadrement droit final
         map.addWall(18, 10);
 
-        // -----------------------------
         // PLACEMENT JOUEURS / FANTÔMES
-        // -----------------------------
-
         map.addPlayer(3, 6);
         map.addGhost_Blue(10, 3);
         map.addGhost_Pink(5, 1);

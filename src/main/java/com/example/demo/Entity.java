@@ -5,7 +5,6 @@ import java.util.Random;
 public class Entity
 {
     Random rand = new Random();
-    public static int tailleCase = 32;
 
     protected int x;
     protected int y;

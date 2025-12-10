@@ -1,6 +1,5 @@
 package com.example.demo;
 import javafx.scene.image.Image;
-import java.awt.event.*;
 import java.util.Iterator;
 import static com.example.demo.Map.*;
 
@@ -60,25 +59,61 @@ public class Joueur extends Entity{
         }
     }
 
-    public void coli_joueur(Map map) {
-        //check wall collisions
+    /**
+     * NOUVELLE MÉTHODE : Gère le déplacement du joueur sur la map
+     */
+    public void updateMouvement(Map map) {
+        // Effacer l'ancienne position
+        map.getMap()[this.y][this.x] = EMPTY;
+
+        // Calculer la nouvelle position
+        int newX = this.x + this.dx;
+        int newY = this.y + this.dy;
+
+        // Vérifier les limites de la map
+        if (newY <= 0 || newY >= map.getHauteur() - 1 ||
+                newX <= 0 || newX >= map.getLongueur() - 1) {
+            // Remettre le joueur à sa position actuelle
+            map.getMap()[this.y][this.x] = PLAYER;
+            return;
+        }
+
+        // Vérifier collision avec les murs
+        boolean collision = false;
         for (Entity mur : map.murs) {
-            if (collision(this, mur)) {
-                this.x -= this.dx;
-                this.y -= this.dy;
+            if (newX == mur.getX() && newY == mur.getY()) {
+                collision = true;
                 break;
             }
         }
 
+        if (collision) {
+            // Remettre le joueur à sa position actuelle
+            map.getMap()[this.y][this.x] = PLAYER;
+            return;
+        }
+
+        // Déplacer le joueur
+        this.x = newX;
+        this.y = newY;
+        map.getMap()[this.y][this.x] = PLAYER;
+
+        // Vérifier les collisions avec ennemis et points
+        coli_joueur(map);
+    }
+
+    public void coli_joueur(Map map) {
+        // Vérifier collision avec ennemis
         for (Ennemi ennemi : map.ennemies) {
             if (collision(ennemi, this)) {
                 this.nb_vie -= 1;
                 map.getMap()[this.getY()][this.getX()] = EMPTY;
                 this.reset(map);
+                return; // Sortir après reset
             }
         }
 
-        //check food collision
+        // Vérifier collision avec points (orbes)
         Iterator<Entity> iterator = map.points.iterator();
         while (iterator.hasNext()) {
             Entity point = iterator.next();
