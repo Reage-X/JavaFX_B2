@@ -10,7 +10,7 @@ import java.awt.event.KeyListener;
 
 import static com.example.demo.Map.*;
 
-public class Main implements KeyListener {
+public class Main /*implements KeyListener*/ {
 
     static boolean jeuEnCours = true;
     static Map map = new Map();
@@ -32,12 +32,9 @@ public class Main implements KeyListener {
 
         menuLoginSign(sc, conn);
         menuCompte(sc, conn);
-        start(sc);
-        play();
     }
 
-
-
+    /*
     public void keyTyped(KeyEvent e) {}
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -61,7 +58,7 @@ public class Main implements KeyListener {
         map.getMap()[compte.getJoueur().getY()][compte.getJoueur().getX()] = PLAYER ;
     }
     public void keyReleased(KeyEvent e) {}
-
+    */
 
     private static void menuLoginSign(Scanner sc, Connection conn) throws SQLException {
 
@@ -133,7 +130,6 @@ public class Main implements KeyListener {
 
 
 
-
     // =============================================================
     //           MENU APRES CONNEXION
     // =============================================================
@@ -156,7 +152,8 @@ public class Main implements KeyListener {
 
                     // -------------------------------------------------
                     case 1:
-                        //Logique du jeu TODO
+                        start(sc);
+                        play();
                         break;
 
                     // -------------------------------------------------
@@ -212,7 +209,6 @@ public class Main implements KeyListener {
         }
     }
 
-
     public static void start(Scanner sc) {;
         System.out.println("Quel niveau voulez-vous jouer ? (1 ou 2)");
         int niveau = sc.nextInt();
@@ -225,14 +221,23 @@ public class Main implements KeyListener {
         else map = map.niveau2();
     }
 
-
     public static void  play() {
         while (jeuEnCours)
         {
             if(compte.getJoueur().getNb_vie() !=0)
             {
                 compte.getJoueur().coli_joueur(map);
-                for (Ennemi ennemi : map.ennemies) { ennemi.updateMouvement(map); }
+                for (Ennemi ennemi : map.ennemies) {
+                    ennemi.updateMouvement(map);
+                    /*System.out.println("direction: " +ennemi.getDirection()+
+                            "\n"+"coordonées: "+ennemi.getX()+","+ennemi.getY()+
+                            "\n"+"derivé: "+ennemi.getDx()+","+ennemi.getDy()+
+                            "\n"+"couleur: "+ennemi.getCouleur());*/
+                }
+                /*System.out.println("\n\n\n");
+                System.out.println("coordonnées: "+compte.getJoueur().getX()+","+compte.getJoueur().getY()+
+                        "\n"+"derive: "+compte.getJoueur().getDx()+","+compte.getJoueur().getDy()+
+                        "\n"+"direction: "+compte.getJoueur().getDirection());*/
                 map.print();
             }
             else{

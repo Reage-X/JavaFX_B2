@@ -1,6 +1,7 @@
 package com.example.demo;
 import javafx.scene.image.Image;
 import java.awt.event.*;
+import java.util.Iterator;
 import static com.example.demo.Map.*;
 
 
@@ -69,7 +70,6 @@ public class Joueur extends Entity{
             }
         }
 
-        //check ghost collisions
         for (Ennemi ennemi : map.ennemies) {
             if (collision(ennemi, this)) {
                 this.nb_vie -= 1;
@@ -79,13 +79,13 @@ public class Joueur extends Entity{
         }
 
         //check food collision
-        Entity pointSupp = null;
-        for (Entity point : map.points) {
+        Iterator<Entity> iterator = map.points.iterator();
+        while (iterator.hasNext()) {
+            Entity point = iterator.next();
             if (collision(this, point)) {
-                pointSupp = point;
                 map.getMap()[point.getY()][point.getX()] = EMPTY;
                 this.score_jeu += 10;
-                map.points.remove(pointSupp);
+                iterator.remove();
             }
         }
     }

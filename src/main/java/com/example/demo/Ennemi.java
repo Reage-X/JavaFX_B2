@@ -7,6 +7,7 @@ public class Ennemi extends Entity {
 
 
     public void setCouleur(char couleur) { this.couleur = couleur; }
+    public String getCouleur() { return String.valueOf(couleur);}
 
     public Ennemi(int startX, int startY,int largeur, int hauteur) {
         super(startX, startY, largeur, hauteur);
@@ -18,8 +19,8 @@ public class Ennemi extends Entity {
         map.getMap()[this.y][this.x] = EMPTY;
         this.x += this.dx;
         this.y += this.dy;
-        if (this.y <= 0 || this.y >= map.getHauteur() ||
-                this.x <= 0 || this.x >= map.getLongueur()) {
+        if (this.y <= 1 || this.y >= map.getHauteur() ||
+                this.x <= 1 || this.x >= map.getLongueur()) {
             this.x -= this.dx;
             this.y -= this.dy;
             this.setDirection(rand.nextInt(4));

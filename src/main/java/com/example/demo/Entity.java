@@ -20,8 +20,8 @@ public class Entity
 
     public Entity(int startX, int startY, int largeur, int hauteur)
     {
-        this.x = 0;
-        this.y = 0;
+        this.x = startX;
+        this.y = startY;
         this.dx = 0;
         this.dy = 0;
         this.direction = rand.nextInt(4);

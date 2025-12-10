@@ -119,13 +119,13 @@ public class Map {
 
 
     public void print() {
+        System.out.println("\n\n\n\n");
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < longueur; x++) {
                 System.out.print(map[y][x]);
             }
             System.out.println();
         }
-        System.out.println("\n\n\n\n");
     }
 
 
