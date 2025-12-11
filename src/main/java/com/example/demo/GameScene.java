@@ -78,7 +78,7 @@ public class GameScene {
             sprites.put("ghost_red", new Image(getClass().getResourceAsStream("/image/redGhost.png")));
             sprites.put("ghost_pink", new Image(getClass().getResourceAsStream("/image/pinkGhost.png")));
             sprites.put("ghost_orange", new Image(getClass().getResourceAsStream("/image/orangeGhost.png")));
-            sprites.put("ghost_blue", new Image(getClass().getResourceAsStream("/image/orangeGhost.png"))); // Utiliser orange pour blue si pas de cyan
+            sprites.put("ghost_blue", new Image(getClass().getResourceAsStream("/image/blueGhost.png"))); // Utilise maintenant le vrai blueGhost.png
 
             sprites.put("wall", new Image(getClass().getResourceAsStream("/image/wall.png")));
             sprites.put("orb", new Image(getClass().getResourceAsStream("/image/powerFood.png")));
