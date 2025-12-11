@@ -6,12 +6,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
@@ -21,8 +20,7 @@ public class MenuCompte extends Application {
     private Stage stage;
     private Connection conn;
     private BorderPane mainContainer;
-    private Text usernameText;
-    private VBox leftMenu;
+    private Label usernameLabel;
 
     public MenuCompte(Stage stage, Connection conn) {
         this.stage = stage;
@@ -37,163 +35,151 @@ public class MenuCompte extends Application {
     public void start(Stage stage) {
         this.stage = stage;
 
-        // Conteneur principal BorderPane
-        mainContainer = new BorderPane();
-        mainContainer.setStyle("-fx-background-color: black;");
+        BorderPane root = createContent();
 
-        // === LEFT : Menu latéral ===
-        leftMenu = createLeftMenu();
-        mainContainer.setLeft(leftMenu);
-
-        // === CENTER : Zone de contenu dynamique ===
-        // Afficher la page d'accueil par défaut
-        loadHomePage();
-
-        // Créer la scène
-        Scene scene = new Scene(mainContainer, 1000, 700);
-        stage.setScene(scene);
-        stage.setTitle("Pacman - Menu Compte");
-        stage.show();
+        // Si la scène existe déjà, on change juste le root
+        if (stage.getScene() != null) {
+            stage.getScene().setRoot(root);
+        } else {
+            Scene scene = new Scene(root, 1200, 800);
+            stage.setScene(scene);
+            stage.setTitle("Pacman Game");
+            stage.setMaximized(true);
+            stage.show();
+        }
     }
 
-    private VBox createLeftMenu() {
-        VBox menu = new VBox(20);
-        menu.setAlignment(Pos.TOP_CENTER);
-        menu.setPadding(new Insets(30, 20, 30, 20));
-        menu.setStyle("-fx-background-color: #0a0a0a; -fx-border-color: cyan; -fx-border-width: 0 2 0 0;");
-        menu.setPrefWidth(280);
+    private BorderPane createContent() {
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: #1a1a2e;");
 
-        // Titre et nom utilisateur
-        Text title = new Text("MENU");
-        title.setFont(Font.font("Courier New", FontWeight.BOLD, 32));
-        title.setFill(Color.CYAN);
+        // Header
+        HBox header = creerHeader();
+        root.setTop(header);
 
-        DropShadow glow = new DropShadow();
-        glow.setColor(Color.CYAN);
-        glow.setRadius(15);
-        glow.setSpread(0.7);
-        title.setEffect(glow);
+        // Menu latéral
+        VBox menu = creerMenu(stage);
+        root.setLeft(menu);
 
-        usernameText = new Text(Main.compte.getUser_name());
-        usernameText.setFont(Font.font("Courier New", FontWeight.BOLD, 16));
-        usernameText.setFill(Color.LIGHTGRAY);
+        // Contenu central par défaut
+        mainContainer = root;
+        VBox centre = creerAccueil();
+        root.setCenter(centre);
 
-        Region spacer1 = new Region();
-        spacer1.setPrefHeight(20);
+        return root;
+    }
 
-        // Boutons du menu
-        Button homeBtn = createMenuButton("🏠 ACCUEIL", Color.CYAN);
-        Button playBtn = createMenuButton("🎮 JOUER", Color.LIME);
-        Button scoresBtn = createMenuButton("🏆 SCORES", Color.YELLOW);
-        Button profileBtn = createMenuButton("👤 PROFIL", Color.rgb(255, 184, 174));
-        
-        Region spacer2 = new Region();
-        VBox.setVgrow(spacer2, Priority.ALWAYS);
-        
-        Button logoutBtn = createMenuButton("🚪 DÉCONNEXION", Color.RED);
+    private HBox creerHeader() {
+        HBox header = new HBox();
+        header.setPadding(new Insets(15));
+        header.setStyle("-fx-background-color: #16213e;");
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setSpacing(20);
 
-        // Actions
-        homeBtn.setOnAction(e -> loadHomePage());
-        playBtn.setOnAction(e -> new ChoixNiveau(stage, conn));
-        scoresBtn.setOnAction(e -> loadContentPage(new ScoresPage(conn)));
-        profileBtn.setOnAction(e -> loadContentPage(new ProfilePage(stage, conn, this)));
-        logoutBtn.setOnAction(e -> new LoginPage(stage, conn));
+        Label titre = new Label("🎮 PACMAN GAME");
+        titre.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        titre.setTextFill(Color.web("#ffd700"));
 
-        menu.getChildren().addAll(title, usernameText, spacer1, homeBtn, playBtn, 
-                                  scoresBtn, profileBtn, spacer2, logoutBtn);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        usernameLabel = new Label("Joueur: " + Main.compte.getUser_name());
+        usernameLabel.setTextFill(Color.WHITE);
+        usernameLabel.setFont(Font.font("Arial", 14));
+
+        Button btnDeconnexion = new Button("Déconnexion");
+        btnDeconnexion.setStyle("-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-weight: bold;");
+        btnDeconnexion.setOnAction(e -> new LoginPage(stage, conn));
+
+        header.getChildren().addAll(titre, spacer, usernameLabel, btnDeconnexion);
+        return header;
+    }
+
+    private VBox creerMenu(Stage stage) {
+        VBox menu = new VBox(10);
+        menu.setPadding(new Insets(20));
+        menu.setStyle("-fx-background-color: #0f3460;");
+        menu.setPrefWidth(220);
+
+        Button btnAccueil = creerBoutonMenu("🏠 Accueil");
+        Button btnJouer = creerBoutonMenu("🎮 Jouer");
+        Button btnScores = creerBoutonMenu("🏆 Scores");
+        Button btnProfil = creerBoutonMenu("👤 Mon Profil");
+
+        btnAccueil.setOnAction(e -> mainContainer.setCenter(creerAccueil()));
+        btnJouer.setOnAction(e -> new ChoixNiveau(stage, conn));
+        btnScores.setOnAction(e -> mainContainer.setCenter(new ScoresPage(conn)));
+        btnProfil.setOnAction(e -> mainContainer.setCenter(new ProfilePage(stage, conn, this)));
+
+        menu.getChildren().addAll(btnAccueil, btnJouer, btnScores, btnProfil);
         return menu;
     }
 
-    private Button createMenuButton(String text, Color color) {
-        Button btn = new Button(text);
-        btn.setFont(Font.font("Courier New", FontWeight.BOLD, 16));
-        btn.setPrefWidth(240);
-        btn.setPrefHeight(50);
-        btn.setTextFill(color);
-        btn.setAlignment(Pos.CENTER_LEFT);
-        btn.setPadding(new Insets(0, 0, 0, 20));
-        btn.setStyle(
-                "-fx-background-color: transparent;" +
-                        "-fx-border-color: " + toRgbString(color) + ";" +
-                        "-fx-border-width: 2px;" +
-                        "-fx-border-radius: 8px;" +
-                        "-fx-background-radius: 8px;"
-        );
-
-        DropShadow shadow = new DropShadow();
-        shadow.setColor(color);
-        shadow.setRadius(10);
-        shadow.setSpread(0.4);
-        btn.setEffect(shadow);
-
-        btn.setOnMouseEntered(e -> {
-            btn.setStyle(
-                    "-fx-background-color: " + toRgbString(color.deriveColor(0, 1, 1, 0.15)) + ";" +
-                            "-fx-border-color: " + toRgbString(color) + ";" +
-                            "-fx-border-width: 2px;" +
-                            "-fx-border-radius: 8px;" +
-                            "-fx-background-radius: 8px;"
-            );
-            shadow.setRadius(18);
-            shadow.setSpread(0.6);
-        });
-
-        btn.setOnMouseExited(e -> {
-            btn.setStyle(
-                    "-fx-background-color: transparent;" +
-                            "-fx-border-color: " + toRgbString(color) + ";" +
-                            "-fx-border-width: 2px;" +
-                            "-fx-border-radius: 8px;" +
-                            "-fx-background-radius: 8px;"
-            );
-            shadow.setRadius(10);
-            shadow.setSpread(0.4);
-        });
-
+    private Button creerBoutonMenu(String texte) {
+        Button btn = new Button(texte);
+        btn.setPrefWidth(180);
+        btn.setStyle("-fx-background-color: #16213e; -fx-text-fill: white; -fx-font-size: 14px; " +
+                "-fx-padding: 12; -fx-cursor: hand;");
+        btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: #ffd700; -fx-text-fill: black; " +
+                "-fx-font-size: 14px; -fx-padding: 12; -fx-cursor: hand; -fx-font-weight: bold;"));
+        btn.setOnMouseExited(e -> btn.setStyle("-fx-background-color: #16213e; -fx-text-fill: white; " +
+                "-fx-font-size: 14px; -fx-padding: 12; -fx-cursor: hand;"));
         return btn;
     }
 
-    // Méthode pour charger une page dans le centre
-    public void loadContentPage(Region content) {
-        mainContainer.setCenter(content);
+    private VBox creerAccueil() {
+        VBox vbox = new VBox(30);
+        vbox.setPadding(new Insets(40));
+        vbox.setAlignment(Pos.TOP_CENTER);
+
+        Label titre = new Label("🏠 BIENVENUE");
+        titre.setFont(Font.font("Arial", FontWeight.BOLD, 32));
+        titre.setTextFill(Color.web("#ffd700"));
+
+        // Statistiques du joueur
+        HBox stats = new HBox(20);
+        stats.setAlignment(Pos.CENTER);
+
+        VBox statScore = creerCarteStat("🎯 Meilleur Score",
+                Main.compte.getScore().isEmpty() ? "0" : String.valueOf(Main.compte.getScore().get(0)), "#3498db");
+        VBox statNbScores = creerCarteStat("📊 Parties Jouées", String.valueOf(Main.compte.getScore().size()), "#2ecc71");
+        VBox statTotal = creerCarteStat("💯 Score Total",
+                String.valueOf(Main.compte.getScore().stream().mapToInt(Integer::intValue).sum()), "#e74c3c");
+
+        stats.getChildren().addAll(statScore, statNbScores, statTotal);
+
+        // Bouton de jeu principal
+        Button btnJouerGrand = new Button("▶️ COMMENCER À JOUER");
+        btnJouerGrand.setStyle("-fx-background-color: #ffd700; -fx-text-fill: black; " +
+                "-fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 20 40; -fx-cursor: hand;");
+        btnJouerGrand.setPrefSize(400, 80);
+        btnJouerGrand.setOnAction(e -> new ChoixNiveau(stage, conn));
+
+        vbox.getChildren().addAll(titre, stats, btnJouerGrand);
+        return vbox;
     }
 
-    // Page d'accueil par défaut
-    private void loadHomePage() {
-        VBox homePage = new VBox(40);
-        homePage.setAlignment(Pos.CENTER);
-        homePage.setStyle("-fx-background-color: black;");
+    private VBox creerCarteStat(String titre, String valeur, String couleur) {
+        VBox carte = new VBox(10);
+        carte.setAlignment(Pos.CENTER);
+        carte.setPadding(new Insets(30));
+        carte.setStyle("-fx-background-color: " + couleur + "; -fx-background-radius: 10;");
+        carte.setPrefSize(200, 150);
 
-        Text welcome = new Text("BIENVENUE\n" + Main.compte.getUser_name() + " !");
-        welcome.setFont(Font.font("Courier New", FontWeight.BOLD, 48));
-        welcome.setFill(Color.CYAN);
-        welcome.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+        Label lblTitre = new Label(titre);
+        lblTitre.setTextFill(Color.WHITE);
+        lblTitre.setFont(Font.font("Arial", FontWeight.BOLD, 18));
 
-        DropShadow glow = new DropShadow();
-        glow.setColor(Color.CYAN);
-        glow.setRadius(25);
-        glow.setSpread(0.7);
-        welcome.setEffect(glow);
+        Label lblValeur = new Label(valeur);
+        lblValeur.setTextFill(Color.WHITE);
+        lblValeur.setFont(Font.font("Arial", FontWeight.BOLD, 48));
 
-        Text instruction = new Text("Utilisez le menu pour naviguer");
-        instruction.setFont(Font.font("Courier New", FontWeight.NORMAL, 18));
-        instruction.setFill(Color.LIGHTGRAY);
-
-        homePage.getChildren().addAll(welcome, instruction);
-        mainContainer.setCenter(homePage);
+        carte.getChildren().addAll(lblTitre, lblValeur);
+        return carte;
     }
 
-    // Méthode pour rafraîchir le nom d'utilisateur
     public void refreshUsername() {
-        usernameText.setText(Main.compte.getUser_name());
-    }
-
-    private String toRgbString(Color color) {
-        return String.format("rgb(%d, %d, %d)",
-                (int) (color.getRed() * 255),
-                (int) (color.getGreen() * 255),
-                (int) (color.getBlue() * 255)
-        );
+        usernameLabel.setText("Joueur: " + Main.compte.getUser_name());
     }
 
     public static void main(String[] args) {

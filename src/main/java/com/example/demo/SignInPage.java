@@ -1,22 +1,17 @@
 package com.example.demo;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class SignInPage extends Application {
@@ -37,208 +32,157 @@ public class SignInPage extends Application {
     public void start(Stage stage) {
         this.stage = stage;
 
-        // Conteneur principal
+        VBox root = createContent();
+
+        // Si la scène existe déjà, on change juste le root
+        if (stage.getScene() != null) {
+            stage.getScene().setRoot(root);
+        } else {
+            Scene scene = new Scene(root, 1200, 800);
+            stage.setScene(scene);
+            stage.setTitle("Pacman Game");
+            stage.setMaximized(true);
+            stage.show();
+        }
+    }
+
+    private VBox createContent() {
         VBox root = new VBox(30);
         root.setAlignment(Pos.CENTER);
-        root.setStyle("-fx-background-color: black; -fx-padding: 40;");
+        root.setPadding(new Insets(50));
+        root.setStyle("-fx-background-color: #1a1a2e;");
 
         // Titre
-        Text title = new Text("CRÉER UN COMPTE");
-        title.setFont(Font.font("Courier New", FontWeight.BOLD, 42));
-        title.setFill(Color.rgb(255, 184, 174));
+        Label titre = new Label("📝 INSCRIPTION");
+        titre.setFont(Font.font("Arial", FontWeight.BOLD, 48));
+        titre.setTextFill(Color.web("#ffd700"));
 
-        DropShadow glow = new DropShadow();
-        glow.setColor(Color.rgb(255, 184, 174));
-        glow.setRadius(20);
-        glow.setSpread(0.7);
-        title.setEffect(glow);
+        // Formulaire
+        GridPane form = new GridPane();
+        form.setAlignment(Pos.CENTER);
+        form.setHgap(15);
+        form.setVgap(20);
+        form.setPadding(new Insets(40));
+        form.setStyle("-fx-background-color: #16213e; -fx-background-radius: 10;");
 
-        // Champs de saisie
-        TextField pseudoField = createNeonTextField("Pseudo");
-        PasswordField mdpField = createNeonPasswordField("Mot de passe");
-        PasswordField confirmMdpField = createNeonPasswordField("Confirmer mot de passe");
+        // Champs
+        Label pseudoLabel = new Label("Pseudo:");
+        pseudoLabel.setTextFill(Color.WHITE);
+        pseudoLabel.setFont(Font.font("Arial", 16));
+        TextField pseudoField = new TextField();
+        pseudoField.setPromptText("Votre pseudo");
+        pseudoField.setPrefWidth(350);
+        pseudoField.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
 
-        // Message d'erreur/succès
-        Label messageLabel = new Label("");
-        messageLabel.setFont(Font.font("Courier New", FontWeight.BOLD, 14));
+        Label passLabel = new Label("Mot de passe:");
+        passLabel.setTextFill(Color.WHITE);
+        passLabel.setFont(Font.font("Arial", 16));
+        PasswordField passField = new PasswordField();
+        passField.setPromptText("••••••••");
+        passField.setPrefWidth(350);
+        passField.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+
+        Label confirmLabel = new Label("Confirmer:");
+        confirmLabel.setTextFill(Color.WHITE);
+        confirmLabel.setFont(Font.font("Arial", 16));
+        PasswordField confirmField = new PasswordField();
+        confirmField.setPromptText("••••••••");
+        confirmField.setPrefWidth(350);
+        confirmField.setStyle("-fx-font-size: 14px; -fx-padding: 10;");
+
+        form.add(pseudoLabel, 0, 0);
+        form.add(pseudoField, 1, 0);
+        form.add(passLabel, 0, 1);
+        form.add(passField, 1, 1);
+        form.add(confirmLabel, 0, 2);
+        form.add(confirmField, 1, 2);
 
         // Boutons
-        Button createBtn = createNeonButton("CRÉER", Color.rgb(0, 255, 0));
-        Button backBtn = createNeonButton("RETOUR", Color.LIGHTGRAY);
+        HBox boutonsBox = new HBox(20);
+        boutonsBox.setAlignment(Pos.CENTER);
 
-        // Action Créer
-        createBtn.setOnAction(e -> {
+        Button btnCreer = new Button("Créer le compte");
+        btnCreer.setStyle("-fx-background-color: #ffd700; -fx-text-fill: black; -fx-font-weight: bold; -fx-padding: 12 30; -fx-font-size: 14px;");
+        btnCreer.setPrefWidth(200);
+
+        Button btnRetour = new Button("Retour");
+        btnRetour.setStyle("-fx-background-color: #0f3460; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 30; -fx-font-size: 14px;");
+        btnRetour.setPrefWidth(200);
+
+        boutonsBox.getChildren().addAll(btnCreer, btnRetour);
+
+        // Message
+        Label message = new Label();
+        message.setTextFill(Color.RED);
+        message.setFont(Font.font("Arial", 14));
+        message.setVisible(false);
+
+        // Actions
+        btnCreer.setOnAction(e -> {
             String pseudo = pseudoField.getText().trim();
-            String mdp = mdpField.getText();
-            String confirmMdp = confirmMdpField.getText();
+            String pass = passField.getText();
+            String confirm = confirmField.getText();
 
             // Validations
-            if (pseudo.isEmpty() || mdp.isEmpty() || confirmMdp.isEmpty()) {
-                messageLabel.setText("⚠ Veuillez remplir tous les champs");
-                messageLabel.setTextFill(Color.RED);
+            if (pseudo.isEmpty() || pass.isEmpty()) {
+                message.setText("⚠ Tous les champs sont obligatoires");
+                message.setTextFill(Color.RED);
+                message.setVisible(true);
                 return;
             }
 
-            if (!mdp.equals(confirmMdp)) {
-                messageLabel.setText("⚠ Les mots de passe ne correspondent pas");
-                messageLabel.setTextFill(Color.RED);
-                mdpField.clear();
-                confirmMdpField.clear();
+            if (!pass.equals(confirm)) {
+                message.setText("⚠ Les mots de passe ne correspondent pas");
+                message.setTextFill(Color.RED);
+                message.setVisible(true);
                 return;
             }
 
+            if (pass.length() < 6) {
+                message.setText("⚠ Le mot de passe doit contenir au moins 6 caractères");
+                message.setTextFill(Color.RED);
+                message.setVisible(true);
+                return;
+            }
+
+            // Création du compte
             try {
-                // Vérifier si le pseudo existe déjà
                 if (Sql.PseudoExiste(pseudo, conn)) {
-                    messageLabel.setText("⚠ Ce pseudo existe déjà");
-                    messageLabel.setTextFill(Color.RED);
-                    pseudoField.clear();
+                    message.setText("❌ Pseudo déjà utilisé");
+                    message.setTextFill(Color.RED);
+                    message.setVisible(true);
                     return;
                 }
 
-                // Créer le compte
-                Compte newCompte = new Compte(pseudo, mdp);
-                newCompte.setScore(new ArrayList<>());
+                Compte compte = new Compte(pseudo, pass);
+                compte.setScore(new ArrayList<>());
 
-                if (Sql.addCompte(newCompte, conn)) {
-                    messageLabel.setText("✓ Compte créé avec succès !");
-                    messageLabel.setTextFill(Color.LIME);
+                if (Sql.addCompte(compte, conn)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Succès");
+                    alert.setHeaderText("Compte créé avec succès !");
+                    alert.setContentText("Vous pouvez maintenant vous connecter.");
+                    alert.showAndWait();
 
-                    // Rediriger vers login après 1.5 secondes
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(1500);
-                            javafx.application.Platform.runLater(() -> new LoginPage(stage, conn));
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                    }).start();
+                    new LoginPage(stage, conn);
                 } else {
-                    messageLabel.setText("⚠ Échec de la création du compte");
-                    messageLabel.setTextFill(Color.RED);
+                    message.setText("❌ Erreur lors de la création");
+                    message.setTextFill(Color.RED);
+                    message.setVisible(true);
                 }
-            } catch (SQLException ex) {
-                messageLabel.setText("⚠ Erreur SQL : " + ex.getMessage());
-                messageLabel.setTextFill(Color.RED);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                message.setText("❌ Erreur : " + ex.getMessage());
+                message.setTextFill(Color.RED);
+                message.setVisible(true);
             }
         });
 
-        // Action Retour
-        backBtn.setOnAction(e -> new LoginPage(stage, conn));
+        btnRetour.setOnAction(e -> new LoginPage(stage, conn));
 
-        root.getChildren().addAll(title, pseudoField, mdpField, confirmMdpField, messageLabel, createBtn, backBtn);
+        root.getChildren().addAll(titre, form, boutonsBox, message);
 
-        Scene scene = new Scene(root, 600, 650);
-        stage.setScene(scene);
-        stage.setTitle("Pacman - Créer un Compte");
-        stage.show();
-    }
-
-    private TextField createNeonTextField(String prompt) {
-        TextField field = new TextField();
-        field.setPromptText(prompt);
-        field.setFont(Font.font("Courier New", FontWeight.NORMAL, 18));
-        field.setPrefWidth(350);
-        field.setPrefHeight(50);
-        field.setStyle(
-                "-fx-background-color: black;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-prompt-text-fill: gray;" +
-                        "-fx-border-color: rgb(255, 184, 174);" +
-                        "-fx-border-width: 2px;" +
-                        "-fx-border-radius: 5px;" +
-                        "-fx-background-radius: 5px;" +
-                        "-fx-padding: 10;"
-        );
-
-        DropShadow shadow = new DropShadow();
-        shadow.setColor(Color.rgb(255, 184, 174));
-        shadow.setRadius(10);
-        shadow.setSpread(0.3);
-        field.setEffect(shadow);
-
-        return field;
-    }
-
-    private PasswordField createNeonPasswordField(String prompt) {
-        PasswordField field = new PasswordField();
-        field.setPromptText(prompt);
-        field.setFont(Font.font("Courier New", FontWeight.NORMAL, 18));
-        field.setPrefWidth(350);
-        field.setPrefHeight(50);
-        field.setStyle(
-                "-fx-background-color: black;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-prompt-text-fill: gray;" +
-                        "-fx-border-color: rgb(255, 184, 174);" +
-                        "-fx-border-width: 2px;" +
-                        "-fx-border-radius: 5px;" +
-                        "-fx-background-radius: 5px;" +
-                        "-fx-padding: 10;"
-        );
-
-        DropShadow shadow = new DropShadow();
-        shadow.setColor(Color.rgb(255, 184, 174));
-        shadow.setRadius(10);
-        shadow.setSpread(0.3);
-        field.setEffect(shadow);
-
-        return field;
-    }
-
-    private Button createNeonButton(String text, Color color) {
-        Button btn = new Button(text);
-        btn.setFont(Font.font("Courier New", FontWeight.BOLD, 20));
-        btn.setPrefWidth(350);
-        btn.setPrefHeight(55);
-        btn.setTextFill(color);
-        btn.setStyle(
-                "-fx-background-color: transparent;" +
-                        "-fx-border-color: " + toRgbString(color) + ";" +
-                        "-fx-border-width: 3px;" +
-                        "-fx-border-radius: 10px;" +
-                        "-fx-background-radius: 10px;"
-        );
-
-        DropShadow shadow = new DropShadow();
-        shadow.setColor(color);
-        shadow.setRadius(15);
-        shadow.setSpread(0.5);
-        btn.setEffect(shadow);
-
-        btn.setOnMouseEntered(e -> {
-            btn.setStyle(
-                    "-fx-background-color: " + toRgbString(color.deriveColor(0, 1, 1, 0.2)) + ";" +
-                            "-fx-border-color: " + toRgbString(color) + ";" +
-                            "-fx-border-width: 3px;" +
-                            "-fx-border-radius: 10px;" +
-                            "-fx-background-radius: 10px;"
-            );
-            shadow.setRadius(25);
-            shadow.setSpread(0.7);
-        });
-
-        btn.setOnMouseExited(e -> {
-            btn.setStyle(
-                    "-fx-background-color: transparent;" +
-                            "-fx-border-color: " + toRgbString(color) + ";" +
-                            "-fx-border-width: 3px;" +
-                            "-fx-border-radius: 10px;" +
-                            "-fx-background-radius: 10px;"
-            );
-            shadow.setRadius(15);
-            shadow.setSpread(0.5);
-        });
-
-        return btn;
-    }
-
-    private String toRgbString(Color color) {
-        return String.format("rgb(%d, %d, %d)",
-                (int) (color.getRed() * 255),
-                (int) (color.getGreen() * 255),
-                (int) (color.getBlue() * 255)
-        );
+        return root;
     }
 
     public static void main(String[] args) {

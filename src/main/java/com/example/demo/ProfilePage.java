@@ -1,14 +1,14 @@
+
 package com.example.demo;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
@@ -29,92 +29,66 @@ public class ProfilePage extends VBox {
 
         setAlignment(Pos.TOP_CENTER);
         setPadding(new Insets(40));
-        setStyle("-fx-background-color: black;");
         setSpacing(30);
 
         // Titre
-        Text title = new Text("GESTION DU PROFIL");
-        title.setFont(Font.font("Courier New", FontWeight.BOLD, 40));
-        title.setFill(Color.rgb(255, 184, 174));
+        Label titre = new Label("👤 MON PROFIL");
+        titre.setFont(Font.font("Arial", FontWeight.BOLD, 32));
+        titre.setTextFill(Color.web("#ffd700"));
 
-        DropShadow glow = new DropShadow();
-        glow.setColor(Color.rgb(255, 184, 174));
-        glow.setRadius(20);
-        glow.setSpread(0.7);
-        title.setEffect(glow);
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(20);
+        grid.setVgap(15);
+        grid.setPadding(new Insets(30));
+        grid.setStyle("-fx-background-color: #16213e; -fx-background-radius: 10;");
 
-        // Info utilisateur
-        Text userInfo = new Text("Pseudo actuel : " + Main.compte.getUser_name());
-        userInfo.setFont(Font.font("Courier New", FontWeight.BOLD, 20));
-        userInfo.setFill(Color.LIGHTGRAY);
+        Label lblPseudo = new Label("Pseudo:");
+        lblPseudo.setTextFill(Color.WHITE);
+        lblPseudo.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+        Label valPseudo = new Label(Main.compte.getUser_name());
+        valPseudo.setTextFill(Color.LIGHTGRAY);
+        valPseudo.setFont(Font.font("Arial", 16));
+
+        Label lblScores = new Label("Scores enregistrés:");
+        lblScores.setTextFill(Color.WHITE);
+        lblScores.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+        Label valScores = new Label(String.valueOf(Main.compte.getScore().size()));
+        valScores.setTextFill(Color.web("#ffd700"));
+        valScores.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        grid.add(lblPseudo, 0, 0);
+        grid.add(valPseudo, 1, 0);
+        grid.add(lblScores, 0, 1);
+        grid.add(valScores, 1, 1);
 
         // Message de feedback
         messageLabel = new Label("");
-        messageLabel.setFont(Font.font("Courier New", FontWeight.BOLD, 16));
+        messageLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         messageLabel.setWrapText(true);
         messageLabel.setMaxWidth(500);
 
         // Boutons d'action
-        Button changePseudoBtn = createActionButton("MODIFIER PSEUDO", Color.CYAN);
-        Button changeMdpBtn = createActionButton("MODIFIER MOT DE PASSE", Color.YELLOW);
-        Button deleteBtn = createActionButton("SUPPRIMER COMPTE", Color.RED);
+        Button changePseudoBtn = createActionButton("Modifier Pseudo");
+        Button changeMdpBtn = createActionButton("Modifier Mot de Passe");
+        Button deleteBtn = createActionButton("Supprimer Compte");
+        deleteBtn.setStyle("-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20;");
 
-        // Actions
-        changePseudoBtn.setOnAction(e -> handleChangePseudo(userInfo));
+        changePseudoBtn.setOnAction(e -> handleChangePseudo(valPseudo));
         changeMdpBtn.setOnAction(e -> handleChangeMdp());
         deleteBtn.setOnAction(e -> handleDeleteAccount());
 
-        getChildren().addAll(title, userInfo, messageLabel, changePseudoBtn, changeMdpBtn, deleteBtn);
+        getChildren().addAll(titre, grid, messageLabel, changePseudoBtn, changeMdpBtn, deleteBtn);
     }
 
-    private Button createActionButton(String text, Color color) {
+    private Button createActionButton(String text) {
         Button btn = new Button(text);
-        btn.setFont(Font.font("Courier New", FontWeight.BOLD, 18));
-        btn.setPrefWidth(400);
-        btn.setPrefHeight(55);
-        btn.setTextFill(color);
-        btn.setStyle(
-                "-fx-background-color: transparent;" +
-                        "-fx-border-color: " + toRgbString(color) + ";" +
-                        "-fx-border-width: 3px;" +
-                        "-fx-border-radius: 10px;" +
-                        "-fx-background-radius: 10px;"
-        );
-
-        DropShadow shadow = new DropShadow();
-        shadow.setColor(color);
-        shadow.setRadius(15);
-        shadow.setSpread(0.5);
-        btn.setEffect(shadow);
-
-        btn.setOnMouseEntered(e -> {
-            btn.setStyle(
-                    "-fx-background-color: " + toRgbString(color.deriveColor(0, 1, 1, 0.2)) + ";" +
-                            "-fx-border-color: " + toRgbString(color) + ";" +
-                            "-fx-border-width: 3px;" +
-                            "-fx-border-radius: 10px;" +
-                            "-fx-background-radius: 10px;"
-            );
-            shadow.setRadius(25);
-            shadow.setSpread(0.7);
-        });
-
-        btn.setOnMouseExited(e -> {
-            btn.setStyle(
-                    "-fx-background-color: transparent;" +
-                            "-fx-border-color: " + toRgbString(color) + ";" +
-                            "-fx-border-width: 3px;" +
-                            "-fx-border-radius: 10px;" +
-                            "-fx-background-radius: 10px;"
-            );
-            shadow.setRadius(15);
-            shadow.setSpread(0.5);
-        });
-
+        btn.setStyle("-fx-background-color: #0f3460; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20;");
+        btn.setPrefWidth(300);
         return btn;
     }
 
-    private void handleChangePseudo(Text userInfo) {
+    private void handleChangePseudo(Label valPseudo) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Modifier Pseudo");
         dialog.setHeaderText("Entrez votre nouveau pseudo :");
@@ -130,7 +104,7 @@ public class ProfilePage extends VBox {
                     if (Sql.updateUserName(Main.compte, oldPseudo, conn)) {
                         messageLabel.setText("✓ Pseudo modifié avec succès !");
                         messageLabel.setTextFill(Color.LIME);
-                        userInfo.setText("Pseudo actuel : " + newPseudo.trim());
+                        valPseudo.setText(newPseudo.trim());
                         menuCompte.refreshUsername();
                     } else {
                         messageLabel.setText("⚠ Échec de la modification");
@@ -184,29 +158,16 @@ public class ProfilePage extends VBox {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 if (Sql.deleteCompte(Main.compte, conn)) {
-                    messageLabel.setText("✓ Compte supprimé");
-                    messageLabel.setTextFill(Color.LIME);
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(1500);
-                            javafx.application.Platform.runLater(() -> new LoginPage(stage, conn));
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-                    }).start();
+                    Alert success = new Alert(Alert.AlertType.INFORMATION);
+                    success.setTitle("Compte supprimé");
+                    success.setContentText("Votre compte a été supprimé avec succès.");
+                    success.showAndWait();
+                    new LoginPage(stage, conn);
                 }
             } catch (SQLException ex) {
                 messageLabel.setText("⚠ Erreur : " + ex.getMessage());
                 messageLabel.setTextFill(Color.RED);
             }
         }
-    }
-
-    private String toRgbString(Color color) {
-        return String.format("rgb(%d, %d, %d)",
-                (int) (color.getRed() * 255),
-                (int) (color.getGreen() * 255),
-                (int) (color.getBlue() * 255)
-        );
     }
 }
