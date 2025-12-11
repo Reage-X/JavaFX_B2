@@ -144,133 +144,143 @@ public class Map {
     public Map niveau1() {
         // Carte 19x21 → index max = [18][20]
         Map m = new Map(19, 21);
-
         // Remplir toute la map d'orbes par défaut
         m.fillWithOrbs();
         m.setMaxPoint(196);
-
+        // Placement des entités
+        m.addPlayer(8, 1);
         m.addGhost_Yellow(8, 9);
         m.addGhost_Blue(9, 9);
         m.addGhost_Pink(10, 9);
-        m.addGhost_Red(9, 8);
-        m.addPlayer(8, 1);
-
+        m.addGhost_Red(9, 14);
         // ---------------------------------------------------------
-        // 1. BORDURES EXTÉRIEURES
+        // BORDURES EXTÉRIEURES (ligne 1 et 21)
         // ---------------------------------------------------------
-        // Ligne du haut (y=0) et du bas (y=20)
         for (int x = 0; x < 19; x++) {
             m.addWall(x, 0);
             m.addWall(x, 20);
         }
-
-        // Colonnes gauche (x=0) et droite (x=18)
-        // SAUF le tunnel (y=9)
         for (int y = 0; y < 21; y++) {
-            if (y != 9) {
-                m.addWall(0, y);
-                m.addWall(18, y);
-            }
+            m.addWall(0, y);
+            m.addWall(18, y);
         }
-
         // ---------------------------------------------------------
-        // 2. LIGNE 3 (y = 2)
+        // LIGNE 3 : #.##.###.#.###.##.#
         // ---------------------------------------------------------
-        for (int x = 2; x <= 3; x++) m.addWall(x, 2);
+        m.addWall(2, 2);
+        m.addWall(3, 2);
         for (int x = 5; x <= 7; x++) m.addWall(x, 2);
-        for (int x = 11; x <= 13; x++) m.addWall(x, 2);
-        for (int x = 15; x <= 16; x++) m.addWall(x, 2);
         m.addWall(9, 2);
-
+        for (int x = 11; x <= 13; x++) m.addWall(x, 2);
+        m.addWall(15, 2);
+        m.addWall(16, 2);
         // ---------------------------------------------------------
-        // 3. LIGNE 5 (y = 4)
+        // LIGNE 5 : #.##.#.#####.#.##.#
         // ---------------------------------------------------------
-        for (int x = 2; x <= 3; x++) m.addWall(x, 4);
-        for (int x = 15; x <= 16; x++) m.addWall(x, 4);
-
+        m.addWall(2, 4);
+        m.addWall(3, 4);
         m.addWall(5, 4);
-        m.addWall(5, 5);
-
-        m.addWall(13, 4);
-        m.addWall(13, 5);
-
         for (int x = 7; x <= 11; x++) m.addWall(x, 4);
-        // SUPPRESSION DU MUR EN [5][9] - ligne commentée ci-dessous était : m.addWall(9, 5);
-        // Le mur en position [5][9] n'est plus ajouté
-
+        m.addWall(13, 4);
+        m.addWall(15, 4);
+        m.addWall(16, 4);
         // ---------------------------------------------------------
-        // 4. LIGNES TRANSVERSALES (y = 6 et 12)
+        // LIGNE 6 : #....#.......#....#
         // ---------------------------------------------------------
-        int[] yLines = {6, 12};
-        for (int y : yLines) {
-            for (int x = 0; x <= 3; x++) m.addWall(x, y);
-            for (int x = 5; x <= 8; x++) m.addWall(x, y);
-            for (int x = 10; x <= 13; x++) m.addWall(x, y);
-            for (int x = 15; x <= 18; x++) m.addWall(x, y);
-        }
-
+        m.addWall(5, 5);
+        m.addWall(13, 5);
         // ---------------------------------------------------------
-        // 5. ZONE CENTRALE / MAISON DES FANTÔMES
+        // LIGNE 7 : ####.###.#.###.####
         // ---------------------------------------------------------
-        for (int y = 7; y <= 11; y++) {
-            m.addWall(5, y);
-            m.addWall(13, y);
-        }
-
-        // Murs extérieurs du tunnel (lignes 8 et 10)
-        for (int x = 0; x <= 3; x++) {
-            m.addWall(x, 8);
-            m.addWall(x, 10);
-        }
-        for (int x = 15; x <= 18; x++) {
-            m.addWall(x, 8);
-            m.addWall(x, 10);
-        }
-
-        // Boîte des fantômes (x=7 → 11, y=8 → 10)
+        for (int x = 0; x <= 3; x++) m.addWall(x, 6);
+        for (int x = 5; x <= 7; x++) m.addWall(x, 6);
+        m.addWall(9, 6);
+        for (int x = 11; x <= 13; x++) m.addWall(x, 6);
+        for (int x = 15; x <= 18; x++) m.addWall(x, 6);
+        // ---------------------------------------------------------
+        // LIGNE 8 : #....#...#...#....#
+        // ---------------------------------------------------------
+        m.addWall(5, 7);
+        m.addWall(9, 7);
+        m.addWall(13, 7);
+        // ---------------------------------------------------------
+        // LIGNE 9 : ####.#.#.#.#.#.####
+        // ---------------------------------------------------------
+        for (int x = 0; x <= 3; x++) m.addWall(x, 8);
+        m.addWall(5, 8);
         m.addWall(7, 8);
-        // Position (8, 8) n'est plus un mur - c'est maintenant une orbe
-        m.addWall(9, 8);  // Nouveau mur ajouté à la position (9, 8)
-        // Position (10, 8) n'est plus un mur - c'est maintenant une orbe
+        m.addWall(9, 8);
         m.addWall(11, 8);
-
+        m.addWall(13, 8);
+        for (int x = 15; x <= 18; x++) m.addWall(x, 8);
+        // ---------------------------------------------------------
+        // LIGNE 10 : #....#.#YBP#.#....#
+        // ---------------------------------------------------------
+        m.addWall(5, 9);
         m.addWall(7, 9);
         m.addWall(11, 9);
-
+        m.addWall(13, 9);
+        // ---------------------------------------------------------
+        // LIGNE 11 : ####.#.#####.#.####
+        // ---------------------------------------------------------
+        for (int x = 0; x <= 3; x++) m.addWall(x, 10);
+        m.addWall(5, 10);
         for (int x = 7; x <= 11; x++) m.addWall(x, 10);
-
+        m.addWall(13, 10);
+        for (int x = 15; x <= 18; x++) m.addWall(x, 10);
         // ---------------------------------------------------------
-        // 6. LIGNE 15 (y = 14)
+        // LIGNE 12 : #....#.......#....#
         // ---------------------------------------------------------
-        for (int x = 2; x <= 3; x++) m.addWall(x, 14);
+        m.addWall(5, 11);
+        m.addWall(13, 11);
+        // ---------------------------------------------------------
+        // LIGNE 13 : ####.#.#.#.#.#.####
+        // ---------------------------------------------------------
+        for (int x = 0; x <= 3; x++) m.addWall(x, 12);
+        m.addWall(5, 12);
+        m.addWall(7, 12);
+        m.addWall(9, 12);
+        m.addWall(11, 12);
+        m.addWall(13, 12);
+        for (int x = 15; x <= 18; x++) m.addWall(x, 12);
+        // ---------------------------------------------------------
+        // LIGNE 14 : #........#........#
+        // ---------------------------------------------------------
+        m.addWall(9, 13);
+        // ---------------------------------------------------------
+        // LIGNE 15 : #.##.###.#.###.##.#
+        // ---------------------------------------------------------
+        m.addWall(2, 14);
+        m.addWall(3, 14);
         for (int x = 5; x <= 7; x++) m.addWall(x, 14);
-        for (int x = 11; x <= 13; x++) m.addWall(x, 14);
-        for (int x = 15; x <= 16; x++) m.addWall(x, 14);
         m.addWall(9, 14);
-
+        for (int x = 11; x <= 13; x++) m.addWall(x, 14);
+        m.addWall(15, 14);
+        m.addWall(16, 14);
         // ---------------------------------------------------------
-        // 7. BAS COMPLEXE (y = 16)
+        // LIGNE 17 : ####.#.#####.#.####
         // ---------------------------------------------------------
-        for (int x = 0; x <= 1; x++) m.addWall(x, 16);
-        for (int x = 17; x <= 18; x++) m.addWall(x, 16);
-        m.addWall(3, 16);
-        m.addWall(15, 16);
-
+        for (int x = 0; x <= 3; x++) m.addWall(x, 16);
         m.addWall(5, 16);
-        m.addWall(5, 17);
-        m.addWall(13, 16);
-        m.addWall(13, 17);
-
         for (int x = 7; x <= 11; x++) m.addWall(x, 16);
-        m.addWall(9, 17);
-
+        m.addWall(13, 16);
+        for (int x = 15; x <= 18; x++) m.addWall(x, 16);
         // ---------------------------------------------------------
-        // 8. DERNIÈRE LIGNE INTERNE (y = 18)
+        // LIGNE 18 : #....#...#...#....#
+        // ---------------------------------------------------------
+        m.addWall(5, 17);
+        m.addWall(9, 17);
+        m.addWall(13, 17);
+        // ---------------------------------------------------------
+        // LIGNE 19 : #.######.#.######.#
         // ---------------------------------------------------------
         for (int x = 2; x <= 7; x++) m.addWall(x, 18);
-        for (int x = 11; x <= 16; x++) m.addWall(x, 18);
         m.addWall(9, 18);
-
+        for (int x = 11; x <= 16; x++) m.addWall(x, 18);
+        // ---------------------------------------------------------
+        // LIGNE 20 : #........#........#
+        // ---------------------------------------------------------
+        m.addWall(9, 19);
         return m;
     }
 
