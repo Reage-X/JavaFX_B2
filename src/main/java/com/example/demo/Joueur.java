@@ -59,21 +59,16 @@ public class Joueur extends Entity{
         }
     }
 
-    /**
-     * NOUVELLE MÉTHODE : Gère le déplacement du joueur sur la map
-     */
     public void updateMouvement(Map map) {
         // Effacer l'ancienne position
         map.getMap()[this.y][this.x] = EMPTY;
 
-        // Calculer la nouvelle position
         int newX = this.x + this.dx;
         int newY = this.y + this.dy;
 
         // Vérifier les limites de la map
         if (newY <= 0 || newY >= map.getHauteur() - 1 ||
                 newX <= 0 || newX >= map.getLongueur() - 1) {
-            // Remettre le joueur à sa position actuelle
             map.getMap()[this.y][this.x] = PLAYER;
             return;
         }
@@ -88,12 +83,10 @@ public class Joueur extends Entity{
         }
 
         if (collision) {
-            // Remettre le joueur à sa position actuelle
             map.getMap()[this.y][this.x] = PLAYER;
             return;
         }
 
-        // Déplacer le joueur
         this.x = newX;
         this.y = newY;
         map.getMap()[this.y][this.x] = PLAYER;
@@ -109,7 +102,7 @@ public class Joueur extends Entity{
                 this.nb_vie -= 1;
                 map.getMap()[this.getY()][this.getX()] = EMPTY;
                 this.reset(map);
-                return; // Sortir après reset
+                return;
             }
         }
 
@@ -119,7 +112,7 @@ public class Joueur extends Entity{
             Entity point = iterator.next();
             if (collision(this, point)) {
                 map.getMap()[point.getY()][point.getX()] = EMPTY;
-                this.score_jeu += 1; // +1 point au lieu de +10
+                this.score_jeu += 1;
                 iterator.remove();
             }
         }

@@ -9,9 +9,7 @@ public class PasswordUtil {
 
     private static final int SALT_LENGTH = 16;
 
-    /**
-     * Hash un mot de passe avec un salt aléatoire
-     */
+
     public static String hashPassword(String password) {
         try {
             // Génération d'un salt aléatoire
@@ -29,9 +27,6 @@ public class PasswordUtil {
         }
     }
 
-    /**
-     * Vérifie si un mot de passe correspond au hash stocké
-     */
     public static boolean verifyPassword(String password, String storedHash) {
         try {
             // Séparer le salt et le hash
@@ -53,9 +48,6 @@ public class PasswordUtil {
         }
     }
 
-    /**
-     * Hash un mot de passe avec un salt donné
-     */
     private static String hashWithSalt(String password, byte[] salt) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(salt);

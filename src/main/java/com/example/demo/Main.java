@@ -10,7 +10,6 @@ import java.sql.Statement;
 
 public class Main extends Application {
 
-    // Variables globales statiques
     static boolean jeuEnCours = true;
     static Map map = new Map();
     static Compte compte = new Compte("guest", "guest");
@@ -32,16 +31,10 @@ public class Main extends Application {
             e.printStackTrace();
         }
 
-        // Configuration de la fenêtre
         primaryStage.setMaximized(true); // Démarrer en plein écran
 
-        // Lancer la page de connexion
         new LoginPage(primaryStage, conn);
     }
-
-    /**
-     * Crée la table 'comptes' si elle n'existe pas déjà
-     */
 
 
     @Override

@@ -22,7 +22,7 @@ public class Sql {
                     // Vérification du mot de passe hashé
                     String mdpStocke = rsCmp.getString("MDP");
                     if (!PasswordUtil.verifyPassword(mdpDonne, mdpStocke)) {
-                        return null; // Mauvais mot de passe
+                        return null;
                     }
 
                     // On stocke le hash dans l'objet Compte (pas le mot de passe en clair)

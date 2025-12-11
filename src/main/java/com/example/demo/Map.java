@@ -47,9 +47,7 @@ public class Map {
         this.maxPoint = maxPoint;
     }
 
-    /**
-     * Remplit la carte d'orbes uniquement dans les cases EMPTY ou non initialisées
-     */
+
     public void fillWithOrbs() {
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < longueur; x++) {
@@ -60,11 +58,7 @@ public class Map {
         }
     }
 
-    /**
-     * Retourne le caractère à afficher à une position donnée
-     * sans modifier la matrice map
-     * Priorité : Joueur > Ennemis > Murs > Points > Vide
-     */
+
     public char getCharAt(int x, int y) {
         // Vérifier si c'est le joueur
         if (compte.getJoueur().getX() == x && compte.getJoueur().getY() == y) {
