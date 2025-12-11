@@ -170,12 +170,7 @@ public class ChoixNiveau extends Application {
      * Retourne au menu principal
      */
     private void retourMenu() {
-        // TODO: Implémenter le retour au menu MenuCompte
-        // Exemple : new MenuCompte(stage, conn);
-        System.out.println("Retour au menu principal");
-
-        // Pour l'instant, on peut juste afficher un message ou fermer
-        // stage.close();
+        new MenuCompte(stage, conn);
     }
 
     public static void main(String[] args) {

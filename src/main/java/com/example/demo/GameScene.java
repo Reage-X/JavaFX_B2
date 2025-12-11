@@ -403,7 +403,7 @@ public class GameScene {
         if (gameLoop != null) {
             gameLoop.stop();
         }
-        // Retour au menu principal (à implémenter)
-        new ChoixNiveau(stage, conn);
+        // Retour au MenuCompte
+        new MenuCompte(stage, conn);
     }
 }
