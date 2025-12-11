@@ -229,8 +229,9 @@ public class Map {
 
         // Boîte des fantômes (x=7 → 11, y=8 → 10)
         m.addWall(7, 8);
-        m.addWall(8, 8);
-        m.addWall(10, 8);
+        // Position (8, 8) n'est plus un mur - c'est maintenant une orbe
+        m.addWall(9, 8);  // Nouveau mur ajouté à la position (9, 8)
+        // Position (10, 8) n'est plus un mur - c'est maintenant une orbe
         m.addWall(11, 8);
 
         m.addWall(7, 9);
