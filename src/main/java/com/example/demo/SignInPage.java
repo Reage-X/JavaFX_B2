@@ -117,8 +117,8 @@ public class SignInPage extends Application {
         message.setFont(Font.font("Arial", 14));
         message.setVisible(false);
 
-        // Actions
-        btnCreer.setOnAction(e -> {
+        // Logique d'inscription (à partager entre le bouton et la touche Entrée)
+        Runnable createAction = () -> {
             String pseudo = pseudoField.getText().trim();
             String pass = passField.getText();
             String confirm = confirmField.getText();
@@ -176,7 +176,15 @@ public class SignInPage extends Application {
                 message.setTextFill(Color.RED);
                 message.setVisible(true);
             }
-        });
+        };
+
+        // Action du bouton créer
+        btnCreer.setOnAction(e -> createAction.run());
+
+        // Touche Entrée sur les champs de texte
+        pseudoField.setOnAction(e -> createAction.run());
+        passField.setOnAction(e -> createAction.run());
+        confirmField.setOnAction(e -> createAction.run());
 
         btnRetour.setOnAction(e -> new LoginPage(stage, conn));
 

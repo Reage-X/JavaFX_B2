@@ -1,15 +1,14 @@
 package com.example.demo;
 
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -19,7 +18,9 @@ import javafx.stage.Stage;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static com.example.demo.Main.compte;
 import static com.example.demo.Main.jeuEnCours;
@@ -28,9 +29,7 @@ import static com.example.demo.Sql.updateScore;
 public class GameScene {
 
     private static final int TILE_SIZE = 32;
-    private static final Color BG_COLOR = Color.rgb(0, 0, 0);
-    private static final Color WALL_COLOR = Color.rgb(33, 33, 222);
-    private static final Color ORB_COLOR = Color.rgb(255, 184, 174);
+    private static final Color BG_COLOR = Color.rgb(26, 26, 46); // #1a1a2e
 
     private Canvas canvas;
     private GraphicsContext gc;
@@ -40,11 +39,14 @@ public class GameScene {
 
     private Text scoreText;
     private Text livesText;
-    private Text messageText;
+    private VBox endGameOverlay;
 
     private AnimationTimer gameLoop;
     private long lastUpdate = 0;
-    private static final long UPDATE_INTERVAL = 200_000_000; // 200ms entre chaque update
+    private static final long UPDATE_INTERVAL = 200_000_000; // 200ms
+
+    // Gestion des touches maintenues
+    private Set<KeyCode> pressedKeys = new HashSet<>();
 
     // Images des sprites
     private Map<String, Image> sprites = new HashMap<>();
@@ -67,16 +69,19 @@ public class GameScene {
 
     private void loadSprites() {
         try {
-            // Charger les sprites depuis le dossier resources
-            sprites.put("pacman_up", new Image(getClass().getResourceAsStream("/images/pacman_up.png")));
-            sprites.put("pacman_down", new Image(getClass().getResourceAsStream("/images/pacman_down.png")));
-            sprites.put("pacman_left", new Image(getClass().getResourceAsStream("/images/pacman_left.png")));
-            sprites.put("pacman_right", new Image(getClass().getResourceAsStream("/images/pacman_right.png")));
+            // Charger les sprites depuis le dossier resources/image
+            sprites.put("pacman_up", new Image(getClass().getResourceAsStream("/image/pacmanUp.png")));
+            sprites.put("pacman_down", new Image(getClass().getResourceAsStream("/image/pacmanDown.png")));
+            sprites.put("pacman_left", new Image(getClass().getResourceAsStream("/image/pacmanLeft.png")));
+            sprites.put("pacman_right", new Image(getClass().getResourceAsStream("/image/pacmanRight.png")));
 
-            sprites.put("ghost_red", new Image(getClass().getResourceAsStream("/images/ghost_red.png")));
-            sprites.put("ghost_blue", new Image(getClass().getResourceAsStream("/images/ghost_blue.png")));
-            sprites.put("ghost_pink", new Image(getClass().getResourceAsStream("/images/ghost_pink.png")));
-            sprites.put("ghost_yellow", new Image(getClass().getResourceAsStream("/images/ghost_yellow.png")));
+            sprites.put("ghost_red", new Image(getClass().getResourceAsStream("/image/redGhost.png")));
+            sprites.put("ghost_pink", new Image(getClass().getResourceAsStream("/image/pinkGhost.png")));
+            sprites.put("ghost_orange", new Image(getClass().getResourceAsStream("/image/orangeGhost.png")));
+            sprites.put("ghost_blue", new Image(getClass().getResourceAsStream("/image/orangeGhost.png"))); // Utiliser orange pour blue si pas de cyan
+
+            sprites.put("wall", new Image(getClass().getResourceAsStream("/image/wall.png")));
+            sprites.put("orb", new Image(getClass().getResourceAsStream("/image/powerFood.png")));
 
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des sprites: " + e.getMessage());
@@ -86,42 +91,70 @@ public class GameScene {
 
     private void initializeUI() {
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: black;");
+        root.setStyle("-fx-background-color: #1a1a2e;");
 
-        // === TOP : Score et vies ===
+        // === TOP : Header avec score et vies ===
         HBox topBar = createTopBar();
         root.setTop(topBar);
 
-        // === CENTER : Canvas de jeu ===
+        // === CENTER : Canvas de jeu centré ===
         int canvasWidth = gameMap.getLongueur() * TILE_SIZE;
         int canvasHeight = gameMap.getHauteur() * TILE_SIZE;
         canvas = new Canvas(canvasWidth, canvasHeight);
         gc = canvas.getGraphicsContext2D();
 
-        VBox centerBox = new VBox(canvas);
-        centerBox.setAlignment(Pos.CENTER);
-        centerBox.setStyle("-fx-background-color: black;");
-        root.setCenter(centerBox);
+        // StackPane pour superposer le canvas et l'overlay de fin de jeu
+        StackPane gameArea = new StackPane();
+        gameArea.setStyle("-fx-background-color: #1a1a2e;");
+        gameArea.setAlignment(Pos.CENTER);
+        gameArea.getChildren().add(canvas);
 
-        // === BOTTOM : Message ===
-        messageText = new Text("");
-        messageText.setFont(Font.font("Courier New", FontWeight.BOLD, 24));
-        messageText.setFill(Color.YELLOW);
+        // Overlay de fin de jeu (caché par défaut)
+        endGameOverlay = createEndGameOverlay();
+        endGameOverlay.setVisible(false);
+        gameArea.getChildren().add(endGameOverlay);
 
-        VBox bottomBox = new VBox(messageText);
-        bottomBox.setAlignment(Pos.CENTER);
-        bottomBox.setStyle("-fx-background-color: black; -fx-padding: 10;");
-        root.setBottom(bottomBox);
+        root.setCenter(gameArea);
 
-        // Créer la scène
-        Scene scene = new Scene(root, canvasWidth + 40, canvasHeight + 120);
-        scene.setFill(Color.BLACK);
-
-        // Gestion des touches
-        scene.setOnKeyPressed(event -> handleKeyPress(event.getCode()));
-
-        stage.setScene(scene);
-        stage.setTitle("PACMAN - Niveau " + (gameMap.getMaxPoint() == 196 ? "1" : "2"));
+        // Créer ou mettre à jour la scène
+        if (stage.getScene() != null) {
+            stage.getScene().setRoot(root);
+            // Gestion des touches pressées et relâchées
+            stage.getScene().setOnKeyPressed(event -> {
+                pressedKeys.add(event.getCode());
+                handleKeyPress(event.getCode());
+            });
+            stage.getScene().setOnKeyReleased(event -> {
+                pressedKeys.remove(event.getCode());
+                // Si aucune touche directionnelle n'est pressée, arrêter le joueur
+                if (!pressedKeys.contains(KeyCode.UP) && !pressedKeys.contains(KeyCode.Z) &&
+                        !pressedKeys.contains(KeyCode.DOWN) && !pressedKeys.contains(KeyCode.S) &&
+                        !pressedKeys.contains(KeyCode.LEFT) && !pressedKeys.contains(KeyCode.Q) &&
+                        !pressedKeys.contains(KeyCode.RIGHT) && !pressedKeys.contains(KeyCode.D)) {
+                    stopPlayer();
+                }
+            });
+        } else {
+            Scene scene = new Scene(root, 1200, 800);
+            scene.setOnKeyPressed(event -> {
+                pressedKeys.add(event.getCode());
+                handleKeyPress(event.getCode());
+            });
+            scene.setOnKeyReleased(event -> {
+                pressedKeys.remove(event.getCode());
+                // Si aucune touche directionnelle n'est pressée, arrêter le joueur
+                if (!pressedKeys.contains(KeyCode.UP) && !pressedKeys.contains(KeyCode.Z) &&
+                        !pressedKeys.contains(KeyCode.DOWN) && !pressedKeys.contains(KeyCode.S) &&
+                        !pressedKeys.contains(KeyCode.LEFT) && !pressedKeys.contains(KeyCode.Q) &&
+                        !pressedKeys.contains(KeyCode.RIGHT) && !pressedKeys.contains(KeyCode.D)) {
+                    stopPlayer();
+                }
+            });
+            stage.setScene(scene);
+            stage.setTitle("Pacman Game");
+            stage.setMaximized(true);
+            stage.show();
+        }
 
         // Démarrer le jeu
         startGame();
@@ -130,48 +163,71 @@ public class GameScene {
     private HBox createTopBar() {
         HBox topBar = new HBox(50);
         topBar.setAlignment(Pos.CENTER);
-        topBar.setStyle("-fx-background-color: black; -fx-padding: 15;");
+        topBar.setStyle("-fx-background-color: #16213e; -fx-padding: 20;");
 
         // Score
         scoreText = new Text("SCORE: 0");
-        scoreText.setFont(Font.font("Courier New", FontWeight.BOLD, 20));
-        scoreText.setFill(Color.WHITE);
+        scoreText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        scoreText.setFill(Color.web("#ffd700"));
 
         // Vies
         livesText = new Text("VIES: ❤ ❤ ❤");
-        livesText.setFont(Font.font("Courier New", FontWeight.BOLD, 20));
+        livesText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         livesText.setFill(Color.RED);
 
         topBar.getChildren().addAll(scoreText, livesText);
         return topBar;
     }
 
+    private VBox createEndGameOverlay() {
+        VBox overlay = new VBox(30);
+        overlay.setAlignment(Pos.CENTER);
+        overlay.setPadding(new Insets(50));
+        overlay.setStyle("-fx-background-color: rgba(26, 26, 46, 0.95); -fx-border-color: #ffd700; -fx-border-width: 5; -fx-border-radius: 15; -fx-background-radius: 15;");
+        overlay.setPrefSize(600, 400);
+        return overlay;
+    }
+
     private void handleKeyPress(KeyCode code) {
-        if (!jeuEnCours) return;
+        if (!jeuEnCours) {
+            // Si le jeu est terminé, Entrée revient au menu
+            if (code == KeyCode.ENTER) {
+                returnToMenu();
+            }
+            return;
+        }
 
         Joueur joueur = compte.getJoueur();
 
         switch (code) {
             case UP, Z:
                 joueur.setDirection(0);
+                joueur.updateDx_Dy();
                 break;
             case DOWN, S:
                 joueur.setDirection(2);
+                joueur.updateDx_Dy();
                 break;
             case LEFT, Q:
                 joueur.setDirection(3);
+                joueur.updateDx_Dy();
                 break;
             case RIGHT, D:
                 joueur.setDirection(1);
+                joueur.updateDx_Dy();
                 break;
             case ESCAPE:
                 pauseGame();
                 return;
-            default:
-                return;
         }
+    }
 
-        joueur.updateDx_Dy();
+    private void stopPlayer() {
+        if (jeuEnCours) {
+            Joueur joueur = compte.getJoueur();
+            joueur.setDx(0);
+            joueur.setDy(0);
+        }
     }
 
     private void startGame() {
@@ -202,8 +258,10 @@ public class GameScene {
             return;
         }
 
-        // Déplacer le joueur
-        joueur.updateMouvement(gameMap);
+        // Déplacer le joueur seulement s'il a une direction active
+        if (joueur.getDx() != 0 || joueur.getDy() != 0) {
+            joueur.updateMouvement(gameMap);
+        }
 
         // Déplacer les ennemis
         for (Ennemi ennemi : gameMap.ennemies) {
@@ -221,7 +279,7 @@ public class GameScene {
     }
 
     private void render() {
-        // Fond noir
+        // Fond
         gc.setFill(BG_COLOR);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
@@ -232,58 +290,64 @@ public class GameScene {
 
                 switch (cell) {
                     case com.example.demo.Map.WALL:
-                        drawWall(x, y);
+                        drawSprite(x, y, "wall");
                         break;
                     case com.example.demo.Map.ORB:
-                        drawOrb(x, y);
+                        drawOrbSmall(x, y);
                         break;
                     case com.example.demo.Map.PLAYER:
                         drawPlayer(x, y);
                         break;
                     case com.example.demo.Map.GHOST_Red:
-                        drawGhost(x, y, "red");
+                        drawSprite(x, y, "ghost_red");
                         break;
                     case com.example.demo.Map.GHOST_Blue:
-                        drawGhost(x, y, "blue");
+                        drawSprite(x, y, "ghost_blue");
                         break;
                     case com.example.demo.Map.GHOST_Pink:
-                        drawGhost(x, y, "pink");
+                        drawSprite(x, y, "ghost_pink");
                         break;
                     case com.example.demo.Map.GHOST_Yellow:
-                        drawGhost(x, y, "yellow");
+                        drawSprite(x, y, "ghost_orange");
                         break;
                 }
             }
         }
     }
 
-    private void drawWall(int gridX, int gridY) {
-        gc.setFill(WALL_COLOR);
-        gc.fillRoundRect(
-                gridX * TILE_SIZE + 2,
-                gridY * TILE_SIZE + 2,
-                TILE_SIZE - 4,
-                TILE_SIZE - 4,
-                5, 5
-        );
-
-        // Bordure plus claire
-        gc.setStroke(Color.rgb(66, 66, 255));
-        gc.setLineWidth(1);
-        gc.strokeRoundRect(
-                gridX * TILE_SIZE + 2,
-                gridY * TILE_SIZE + 2,
-                TILE_SIZE - 4,
-                TILE_SIZE - 4,
-                5, 5
-        );
+    private void drawSprite(int gridX, int gridY, String spriteName) {
+        Image sprite = sprites.get(spriteName);
+        if (sprite != null) {
+            gc.drawImage(sprite, gridX * TILE_SIZE, gridY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        } else {
+            // Fallback si l'image n'est pas chargée
+            gc.setFill(Color.GRAY);
+            gc.fillRect(gridX * TILE_SIZE, gridY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
     }
 
-    private void drawOrb(int gridX, int gridY) {
-        gc.setFill(ORB_COLOR);
-        double centerX = gridX * TILE_SIZE + TILE_SIZE / 2.0;
-        double centerY = gridY * TILE_SIZE + TILE_SIZE / 2.0;
-        gc.fillOval(centerX - 3, centerY - 3, 6, 6);
+    private void drawOrbSmall(int gridX, int gridY) {
+        Image sprite = sprites.get("orb");
+        if (sprite != null) {
+            // Réduire la taille par 4 (32 / 4 = 8)
+            int smallSize = TILE_SIZE / 4;
+            int offset = (TILE_SIZE - smallSize) / 2; // Centrer
+            gc.drawImage(sprite,
+                    gridX * TILE_SIZE + offset,
+                    gridY * TILE_SIZE + offset,
+                    smallSize,
+                    smallSize);
+        } else {
+            // Fallback : petit cercle
+            gc.setFill(Color.web("#ffd700"));
+            int smallSize = TILE_SIZE / 4;
+            int offset = (TILE_SIZE - smallSize) / 2;
+            gc.fillOval(
+                    gridX * TILE_SIZE + offset,
+                    gridY * TILE_SIZE + offset,
+                    smallSize,
+                    smallSize);
+        }
     }
 
     private void drawPlayer(int gridX, int gridY) {
@@ -296,42 +360,7 @@ public class GameScene {
             default -> "pacman_right";
         };
 
-        Image sprite = sprites.get(spriteKey);
-        if (sprite != null) {
-            gc.drawImage(sprite, gridX * TILE_SIZE, gridY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-        } else {
-            // Fallback : cercle jaune
-            gc.setFill(Color.YELLOW);
-            gc.fillOval(
-                    gridX * TILE_SIZE + 2,
-                    gridY * TILE_SIZE + 2,
-                    TILE_SIZE - 4,
-                    TILE_SIZE - 4
-            );
-        }
-    }
-
-    private void drawGhost(int gridX, int gridY, String color) {
-        Image sprite = sprites.get("ghost_" + color);
-        if (sprite != null) {
-            gc.drawImage(sprite, gridX * TILE_SIZE, gridY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-        } else {
-            // Fallback : carré coloré
-            Color ghostColor = switch (color) {
-                case "red" -> Color.RED;
-                case "blue" -> Color.CYAN;
-                case "pink" -> Color.PINK;
-                case "yellow" -> Color.YELLOW;
-                default -> Color.WHITE;
-            };
-            gc.setFill(ghostColor);
-            gc.fillRect(
-                    gridX * TILE_SIZE + 4,
-                    gridY * TILE_SIZE + 4,
-                    TILE_SIZE - 8,
-                    TILE_SIZE - 8
-            );
-        }
+        drawSprite(gridX, gridY, spriteKey);
     }
 
     private void updateStats() {
@@ -351,14 +380,43 @@ public class GameScene {
             gameLoop.stop();
         }
 
-        messageText.setText("PAUSE - Appuyez sur ESPACE pour reprendre");
+        // Arrêter le joueur
+        stopPlayer();
+
+        // Afficher overlay de pause
+        Text pauseText = new Text("PAUSE");
+        pauseText.setFont(Font.font("Arial", FontWeight.BOLD, 64));
+        pauseText.setFill(Color.web("#ffd700"));
+
+        Text instruction = new Text("Appuyez sur ESPACE pour reprendre\nESC pour revenir au menu");
+        instruction.setFont(Font.font("Arial", FontWeight.NORMAL, 18));
+        instruction.setFill(Color.WHITE);
+        instruction.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        endGameOverlay.getChildren().clear();
+        endGameOverlay.getChildren().addAll(pauseText, instruction);
+        endGameOverlay.setVisible(true);
 
         stage.getScene().setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.SPACE) {
-                messageText.setText("");
+                endGameOverlay.setVisible(false);
                 jeuEnCours = true;
+                pressedKeys.clear(); // Réinitialiser les touches
                 gameLoop.start();
-                stage.getScene().setOnKeyPressed(e -> handleKeyPress(e.getCode()));
+                // Remettre les handlers normaux
+                stage.getScene().setOnKeyPressed(e -> {
+                    pressedKeys.add(e.getCode());
+                    handleKeyPress(e.getCode());
+                });
+                stage.getScene().setOnKeyReleased(e -> {
+                    pressedKeys.remove(e.getCode());
+                    if (!pressedKeys.contains(KeyCode.UP) && !pressedKeys.contains(KeyCode.Z) &&
+                            !pressedKeys.contains(KeyCode.DOWN) && !pressedKeys.contains(KeyCode.S) &&
+                            !pressedKeys.contains(KeyCode.LEFT) && !pressedKeys.contains(KeyCode.Q) &&
+                            !pressedKeys.contains(KeyCode.RIGHT) && !pressedKeys.contains(KeyCode.D)) {
+                        stopPlayer();
+                    }
+                });
             } else if (event.getCode() == KeyCode.ESCAPE) {
                 returnToMenu();
             }
@@ -371,6 +429,9 @@ public class GameScene {
             gameLoop.stop();
         }
 
+        // Arrêter le joueur
+        stopPlayer();
+
         // Sauvegarder le score
         compte.addScore();
         try {
@@ -379,21 +440,46 @@ public class GameScene {
             System.out.println("Erreur lors de la sauvegarde du score: " + e.getMessage());
         }
 
-        // Afficher message
+        // Afficher l'overlay de fin de jeu
+        endGameOverlay.getChildren().clear();
+
         if (victory) {
-            messageText.setText("🎉 VICTOIRE ! Score: " + compte.getScore(0) + " - ESPACE pour rejouer");
-            messageText.setFill(Color.LIME);
+            // VICTORY
+            Text victoryText = new Text("🎉 VICTORY 🎉");
+            victoryText.setFont(Font.font("Arial", FontWeight.BOLD, 64));
+            victoryText.setFill(Color.LIME);
+
+            Text scoreResult = new Text("Score Final: " + compte.getScore(0) + " points");
+            scoreResult.setFont(Font.font("Arial", FontWeight.BOLD, 28));
+            scoreResult.setFill(Color.web("#ffd700"));
+
+            Text instruction = new Text("Appuyez sur ENTRÉE ou ESPACE pour revenir au menu");
+            instruction.setFont(Font.font("Arial", FontWeight.NORMAL, 18));
+            instruction.setFill(Color.WHITE);
+
+            endGameOverlay.getChildren().addAll(victoryText, scoreResult, instruction);
         } else {
-            messageText.setText("💀 GAME OVER ! Score: " + compte.getScore(0) + " - ESPACE pour rejouer");
-            messageText.setFill(Color.RED);
+            // GAME OVER
+            Text gameOverText = new Text("💀 GAME OVER 💀");
+            gameOverText.setFont(Font.font("Arial", FontWeight.BOLD, 64));
+            gameOverText.setFill(Color.RED);
+
+            Text scoreResult = new Text("Score Final: " + compte.getScore(0) + " points");
+            scoreResult.setFont(Font.font("Arial", FontWeight.BOLD, 28));
+            scoreResult.setFill(Color.web("#ffd700"));
+
+            Text instruction = new Text("Appuyez sur ENTRÉE ou ESPACE pour revenir au menu");
+            instruction.setFont(Font.font("Arial", FontWeight.NORMAL, 18));
+            instruction.setFill(Color.WHITE);
+
+            endGameOverlay.getChildren().addAll(gameOverText, scoreResult, instruction);
         }
 
-        // Gestion des touches fin de jeu
+        endGameOverlay.setVisible(true);
+
+        // Gestion des touches Entrée et Espace pour revenir au menu
         stage.getScene().setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.SPACE) {
-                // Rejouer
-                new ChoixNiveau(stage, conn);
-            } else if (event.getCode() == KeyCode.ESCAPE) {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
                 returnToMenu();
             }
         });
@@ -403,7 +489,8 @@ public class GameScene {
         if (gameLoop != null) {
             gameLoop.stop();
         }
-        // Retour au MenuCompte
+        Main.jeuEnCours = true; // Réinitialiser pour la prochaine partie
+        pressedKeys.clear(); // Nettoyer les touches
         new MenuCompte(stage, conn);
     }
 }

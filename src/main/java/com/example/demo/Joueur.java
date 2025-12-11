@@ -119,7 +119,7 @@ public class Joueur extends Entity{
             Entity point = iterator.next();
             if (collision(this, point)) {
                 map.getMap()[point.getY()][point.getX()] = EMPTY;
-                this.score_jeu += 10;
+                this.score_jeu += 1; // +1 point au lieu de +10
                 iterator.remove();
             }
         }

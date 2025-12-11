@@ -201,7 +201,8 @@ public class Map {
         m.addWall(13, 5);
 
         for (int x = 7; x <= 11; x++) m.addWall(x, 4);
-        m.addWall(9, 5);
+        // SUPPRESSION DU MUR EN [5][9] - ligne commentée ci-dessous était : m.addWall(9, 5);
+        // Le mur en position [5][9] n'est plus ajouté
 
         // ---------------------------------------------------------
         // 4. LIGNES TRANSVERSALES (y = 6 et 12)

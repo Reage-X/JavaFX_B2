@@ -109,8 +109,8 @@ public class LoginPage extends Application {
         messageErreur.setFont(Font.font("Arial", 14));
         messageErreur.setVisible(false);
 
-        // Actions des boutons
-        btnConnexion.setOnAction(e -> {
+        // Logique de connexion (à partager entre le bouton et la touche Entrée)
+        Runnable loginAction = () -> {
             String pseudo = pseudoField.getText().trim();
             String motDePasse = passField.getText();
 
@@ -135,7 +135,14 @@ public class LoginPage extends Application {
                 messageErreur.setText("❌ Erreur de connexion : " + ex.getMessage());
                 messageErreur.setVisible(true);
             }
-        });
+        };
+
+        // Action du bouton connexion
+        btnConnexion.setOnAction(e -> loginAction.run());
+
+        // Touche Entrée sur les champs de texte
+        pseudoField.setOnAction(e -> loginAction.run());
+        passField.setOnAction(e -> loginAction.run());
 
         btnInscription.setOnAction(e -> new SignInPage(stage, conn));
 
